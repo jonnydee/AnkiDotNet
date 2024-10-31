@@ -17,13 +17,14 @@ internal class NoteRepository : SqliteRepository<note>
         "[flds], [sfld], [csum], " +
         "[flags], [data]";
 
-    protected override string GetValues(note i)
+    protected override IReadOnlyList<object> GetValues(note i)
     {
-        return
-            $"{i.id},'{i.guid}',{i.mid}," +
-            $"{i.mod},{i.usn},'{i.tags}'," +
-            $"'{i.flds}','{i.sfld}',{i.csum}," +
-            $"{i.flags},'{i.data}'";
+        return [
+            i.id, i.guid, i.mid,
+            i.mod, i.usn, i.tags,
+            i.flds, i.sfld, i.csum,
+            i.flags, i.data
+        ];
     }
 
     protected override note Map(SqliteDataReader reader)

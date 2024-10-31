@@ -16,12 +16,13 @@ internal class ColRepository : SqliteRepository<col>
         "[dty], [usn], [ls], [conf], [models], " +
         "[decks], [dconf], [tags]";
 
-    protected override string GetValues(col i)
+    protected override IReadOnlyList<object> GetValues(col i)
     {
-        return
-            $"{i.id},{i.crt},{i.mod},{i.scm},{i.ver}," +
-            $"{i.dty},{i.usn},{i.ls},'{i.conf}','{i.models}'," +
-            $"'{i.decks}','{i.dconf}','{i.tags}'";
+        return [
+            i.id, i.crt, i.mod, i.scm, i.ver,
+            i.dty, i.usn, i.ls, i.conf, i.models,
+            i.decks, i.dconf, i.tags
+        ];
     }
 
     protected override col Map(SqliteDataReader reader)

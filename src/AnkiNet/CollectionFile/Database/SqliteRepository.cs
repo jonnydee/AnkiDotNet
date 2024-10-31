@@ -8,7 +8,9 @@ internal abstract class SqliteRepository<T>
 
     protected abstract string TableName { get; }
     protected abstract string Columns { get; }
-    protected abstract string GetValues(T item);
+
+    protected abstract IReadOnlyList<object> GetValues(T item);
+
 
     protected abstract T Map(SqliteDataReader reader);
 
@@ -42,29 +44,53 @@ internal abstract class SqliteRepository<T>
         return result;
     }
 
-    public async Task Add(List<T> items)
+    public async Task Add(IReadOnlyList<T> items)
     {
-        if (!items.Any())
+        if (items.Count == 0)
         {
             return;
         }
 
-        var writeSqlQuery = $@"
-            INSERT INTO {TableName}
-            ({Columns})
-            VALUES ";
+        string writeSqlQuery;
+        {
+            var values = items.Select((item, itemIndex) =>
+            {
+                var itemValueCount = GetValues(item).Length;
 
-        var values = items.Select(i => $"({GetValues(i)})");
-        writeSqlQuery += string.Join(',', values);
+                var @params = Enumerable.Range(0, itemValueCount)
+                    .Select(paramIndex => ParamName(itemIndex, paramIndex));
+
+                return $"({string.Join(',', @params)})";
+            });
+
+            writeSqlQuery = $"INSERT INTO {TableName} ({Columns}) VALUES {string.Join(',', values)}";
+        }
 
         try
         {
-            using var command = new SqliteCommand(writeSqlQuery, _connection);
-            var i = await command.ExecuteNonQueryAsync();
+            await using var command = new SqliteCommand(writeSqlQuery, _connection);
+
+            foreach (var (item, itemIndex) in items.Select((item, itemIndex) => (item, itemIndex)))
+            {
+                var itemValues = GetValues(item);
+                foreach (var (itemValue, paramIndex) in itemValues.Select((itemValue, paramIndex) => (itemValue, paramIndex)))
+                {
+                    var paramName = ParamName(itemIndex, paramIndex);
+                    command.Parameters.AddWithValue(paramName, itemValue);
+                }
+            }
+
+            var numberOfItemsInserted = await command.ExecuteNonQueryAsync();
         }
         catch (Exception e)
         {
             throw new IOException($"Cannot Add {typeof(T).Name}", e);
         }
+
+        #region Helper function(s)
+
+        static string ParamName(int itemIndex, int paramIndex) => $"@p{itemIndex}_{paramIndex}";
+
+        #endregion
     }
 }

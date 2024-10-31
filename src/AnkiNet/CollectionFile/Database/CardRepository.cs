@@ -17,13 +17,14 @@ internal class CardRepository : SqliteRepository<card>
         "[factor], [reps], [lapses], [left], [odue]," +
         "[odid], [flags], [data]";
 
-    protected override string GetValues(card i)
+    protected override IReadOnlyList<object> GetValues(card i)
     {
-        return
-            $"{i.id},{i.nid},{i.did},{i.ord},{i.mod}," +
-            $"{i.usn},{i.type},{i.queue},{i.due},{i.ivl}," +
-            $"{i.factor},{i.reps},{i.lapses},{i.left},{i.odue}," +
-            $"{i.odid},{i.flags},'{i.data}'";
+        return [
+            i.id, i.nid, i.did, i.ord, i.mod,
+            i.usn, i.type, i.queue, i.due, i.ivl,
+            i.factor, i.reps, i.lapses, i.left, i.odue,
+            i.odid, i.flags, i.data
+        ];
     }
 
     protected override card Map(SqliteDataReader reader)

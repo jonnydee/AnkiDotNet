@@ -15,11 +15,12 @@ internal class RevLogRepository : SqliteRepository<revLog>
         "[id], [cid], [usn], [ease], [ivl], " +
         "[lastIvl], [factor], [time], [type]";
 
-    protected override string GetValues(revLog i)
+    protected override IReadOnlyList<object> GetValues(revLog i)
     {
-        return
-            $"{i.id},{i.cid},{i.usn},{i.ease},{i.ivl}," +
-            $"{i.lastIvl},{i.factor},{i.time},{i.type}";
+        return [
+            i.id, i.cid, i.usn, i.ease, i.ivl,
+            i.lastIvl, i.factor, i.time, i.type
+        ];
     }
 
     protected override revLog Map(SqliteDataReader reader)
