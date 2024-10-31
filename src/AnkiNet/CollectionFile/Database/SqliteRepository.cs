@@ -7,7 +7,7 @@ internal abstract class SqliteRepository<T>
     private readonly SqliteConnection _connection;
 
     protected abstract string TableName { get; }
-    protected abstract string Columns { get; }
+    protected abstract IReadOnlyList<string> Columns { get; }
 
     protected abstract IReadOnlyList<object> GetValues(T item);
 
@@ -23,12 +23,12 @@ internal abstract class SqliteRepository<T>
     {
         var result = new List<T>();
 
-        var readAllSqlQuery = $"SELECT {Columns} FROM {TableName}";
+        var readAllSqlQuery = $"SELECT {string.Join(",", Columns)} FROM {TableName}";
 
         try
         {
-            using var command = new SqliteCommand(readAllSqlQuery, _connection);
-            using var reader = await command.ExecuteReaderAsync();
+            await using var command = new SqliteCommand(readAllSqlQuery, _connection);
+            await using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
@@ -53,17 +53,14 @@ internal abstract class SqliteRepository<T>
 
         string writeSqlQuery;
         {
-            var values = items.Select((item, itemIndex) =>
+            var values = Enumerable.Range(0, items.Count).Select(itemIndex =>
             {
-                var itemValueCount = GetValues(item).Length;
-
-                var @params = Enumerable.Range(0, itemValueCount)
-                    .Select(paramIndex => ParamName(itemIndex, paramIndex));
+                var @params = Enumerable.Range(0, Columns.Count).Select(paramIndex => ParamName(itemIndex, paramIndex));
 
                 return $"({string.Join(',', @params)})";
             });
 
-            writeSqlQuery = $"INSERT INTO {TableName} ({Columns}) VALUES {string.Join(',', values)}";
+            writeSqlQuery = $"INSERT INTO {TableName} ({string.Join(",", Columns)}) VALUES {string.Join(',', values)}";
         }
 
         try

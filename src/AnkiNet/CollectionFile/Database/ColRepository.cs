@@ -11,10 +11,12 @@ internal class ColRepository : SqliteRepository<col>
 
     protected override string TableName => "[col]";
 
-    protected override string Columns =>
-        "[id], [crt], [mod], [scm], [ver], " +
-        "[dty], [usn], [ls], [conf], [models], " +
-        "[decks], [dconf], [tags]";
+    protected override IReadOnlyList<string> Columns { get; } =
+        [
+            "[id]", "[crt]", "[mod]", "[scm]", "[ver]",
+            "[dty]", "[usn]", "[ls]", "[conf]", "[models]",
+            "[decks]", "[dconf]", "[tags]"
+        ];
 
     protected override IReadOnlyList<object> GetValues(col i)
     {

@@ -11,7 +11,8 @@ internal class GraveRepository : SqliteRepository<grave>
 
     protected override string TableName => "[graves]";
 
-    protected override string Columns => "[usn], [oid], [type]";
+    protected override IReadOnlyList<string> Columns { get; } =
+        ["[usn]", "[oid]", "[type]"];
 
     protected override IReadOnlyList<object> GetValues(grave i)
     {

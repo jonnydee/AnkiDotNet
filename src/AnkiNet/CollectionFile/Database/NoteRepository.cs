@@ -11,11 +11,13 @@ internal class NoteRepository : SqliteRepository<note>
 
     protected override string TableName => "[notes]";
 
-    protected override string Columns =>
-        "[id], [guid], [mid], " +
-        "[mod], [usn], [tags], " +
-        "[flds], [sfld], [csum], " +
-        "[flags], [data]";
+    protected override IReadOnlyList<string> Columns { get; } =
+        [
+            "[id]", "[guid]", "[mid]",
+            "[mod]", "[usn]", "[tags]",
+            "[flds]", "[sfld]", "[csum]",
+            "[flags]", "[data]"
+        ];
 
     protected override IReadOnlyList<object> GetValues(note i)
     {

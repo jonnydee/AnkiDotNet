@@ -11,11 +11,13 @@ internal class CardRepository : SqliteRepository<card>
 
     protected override string TableName => "[cards]";
 
-    protected override string Columns =>
-        "[id], [nid], [did], [ord], [mod], " +
-        "[usn], [type], [queue], [due], [ivl], " +
-        "[factor], [reps], [lapses], [left], [odue]," +
-        "[odid], [flags], [data]";
+    protected override IReadOnlyList<string> Columns { get; } =
+        [
+            "[id]", "[nid]", "[did]", "[ord]", "[mod]",
+            "[usn]", "[type]", "[queue]", "[due]", "[ivl]",
+            "[factor]", "[reps]", "[lapses]", "[left]", "[odue]",
+            "[odid]", "[flags]", "[data]"
+        ];
 
     protected override IReadOnlyList<object> GetValues(card i)
     {

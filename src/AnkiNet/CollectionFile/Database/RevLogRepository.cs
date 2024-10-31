@@ -11,9 +11,11 @@ internal class RevLogRepository : SqliteRepository<revLog>
 
     protected override string TableName => "[revlog]";
 
-    protected override string Columns =>
-        "[id], [cid], [usn], [ease], [ivl], " +
-        "[lastIvl], [factor], [time], [type]";
+    protected override IReadOnlyList<string> Columns { get; } =
+        [
+            "[id]", "[cid]", "[usn]", "[ease]", "[ivl]",
+            "[lastIvl]", "[factor]", "[time]", "[type]"
+        ];
 
     protected override IReadOnlyList<object> GetValues(revLog i)
     {
