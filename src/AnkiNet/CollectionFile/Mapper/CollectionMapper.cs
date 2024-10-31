@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using AnkiNet.CollectionFile.Database.Model;
 using AnkiNet.CollectionFile.Model;
 using AnkiNet.CollectionFile.Model.Json;
@@ -7,12 +8,17 @@ namespace AnkiNet.CollectionFile.Mapper;
 
 internal static class CollectionMapper
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+    };
+
     public static Collection FromDb(col col)
     {
-        var configuration = JsonSerializer.Deserialize<JsonConfiguration>(col.conf);
-        var models = JsonSerializer.Deserialize<Dictionary<long, JsonModel>>(col.models);
-        var decks = JsonSerializer.Deserialize<Dictionary<long, JsonDeck>>(col.decks);
-        var decksConfiguration = JsonSerializer.Deserialize<Dictionary<long, JsonDeckConfguration>>(col.dconf);
+        var configuration = JsonSerializer.Deserialize<JsonConfiguration>(col.conf, SerializerOptions);
+        var models = JsonSerializer.Deserialize<Dictionary<long, JsonModel>>(col.models, SerializerOptions);
+        var decks = JsonSerializer.Deserialize<Dictionary<long, JsonDeck>>(col.decks, SerializerOptions);
+        var decksConfiguration = JsonSerializer.Deserialize<Dictionary<long, JsonDeckConfguration>>(col.dconf, SerializerOptions);
 
         return new Collection(
             col.id,
@@ -33,10 +39,10 @@ internal static class CollectionMapper
 
     public static col ToDb(Collection collection)
     {
-        var conf = JsonSerializer.Serialize(collection.Configuration);
-        var models = JsonSerializer.Serialize(collection.Models);
-        var decks = JsonSerializer.Serialize(collection.Decks);
-        var dconf = JsonSerializer.Serialize(collection.DecksConfiguration);
+        var conf = JsonSerializer.Serialize(collection.Configuration, SerializerOptions);
+        var models = JsonSerializer.Serialize(collection.Models, SerializerOptions);
+        var decks = JsonSerializer.Serialize(collection.Decks, SerializerOptions);
+        var dconf = JsonSerializer.Serialize(collection.DecksConfiguration, SerializerOptions);
 
         return new col(
             collection.Id,
