@@ -1,26 +1,23 @@
 ﻿using AnkiNet.CollectionFile.Model;
 using AnkiNet.CollectionFile.Model.Json;
+using System.Collections.Immutable;
 
 namespace AnkiNet.CollectionFile;
 
 internal sealed class InternalConverter
 {
-    public InternalConverter()
-    {
-    }
-
     public Collection ConvertAnkiCollectionToCollection(AnkiCollection collection)
     {
         var result = new Collection(
-            1, // Arbitrary
-            0,
-            0,
-            0,
-            11, // See https://github.com/ankitects/anki/blob/main/rslib/src/storage/upgrades/mod.rs (should it be 18?)
-            0,
-            0,
-            0,
-            new JsonConfiguration
+            Id: 1, // Arbitrary
+            CreationDateTime: 0,
+            LastModifiedDateTime: 0,
+            SchemaModificationDateTime: 0,
+            Version: 11, // See https://github.com/ankitects/anki/blob/main/rslib/src/storage/upgrades/mod.rs (should it be 18?)
+            Dirty: 0,
+            UpdateSequenceNumber: 0,
+            LastSyncDateTime: 0,
+            Configuration: new JsonConfiguration
             {
                 SortBackwards = false,
                 CurrentDeck = 1,
@@ -36,11 +33,11 @@ internal sealed class InternalConverter
                 DayLearnFirst = false,
                 SchedulerVersion = 2,
                 CreationOffset = -480,
-                ActiveDecks = new[] { 1 },
+                ActiveDecks = [1],
                 NewBury = false,
                 LastUnburied = 0,
             },
-            collection.NoteTypes.ToDictionary(
+            Models: collection.NoteTypes.ToDictionary(
                 nt => nt.Id,
                 nt => new JsonModel
                 {
@@ -51,12 +48,12 @@ internal sealed class InternalConverter
                     DefaultDeckId = null,
                     ModelType = 0,
                     UpdateSequenceNumber = 0,
-                    LegacyVersionNumber = null,
+                    LegacyVersionNumber = [],
                     LatexPost = "\\end{ document }",
                     LatexPre = "\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
                     LatexSvg = false,
                     BrowserSortField = 0,
-                    LastAddedNoteTags = null,
+                    LastAddedNoteTags = [],
                     CardTemplates = nt.CardTypes.Select(ct => new JsonCardTemplate
                     {
                         TemplateName = ct.Name,
@@ -80,15 +77,15 @@ internal sealed class InternalConverter
                         Description = string.Empty,
                         Media = null
                     }).ToArray(),
-                    RequiredFields = new object[]
-                    {
+                    RequiredFields =
+                    [
                         0,
                         "any",
                         new object[] {0}
-                    }
+                    ]
                 }
             ),
-            collection.Decks.ToDictionary(
+            Decks: collection.Decks.ToDictionary(
                 d => d.Id,
                 d => new JsonDeck
                 {
@@ -96,10 +93,10 @@ internal sealed class InternalConverter
                     LastModificationTime = 0,
                     Name = d.Name,
                     UpdateSequenceNumber = 0,
-                    NewToday = new[] { 0, 0 },
-                    ReviewedToday = new[] { 0, 0 },
-                    LearnedToday = new[] { 0, 0 },
-                    TimeToday = new[] { 0, 0 },
+                    NewToday = [0, 0],
+                    ReviewedToday = [0, 0],
+                    LearnedToday = [0, 0],
+                    TimeToday = [0, 0],
                     IsCollapsed = false,
                     IsCollapsedInBrowser = false,
                     Description = string.Empty, // TODO Handle deck description?
@@ -109,149 +106,155 @@ internal sealed class InternalConverter
                     ExtendedReviewCardLimit = 0,
                 }
             ),
-            new Dictionary<long, JsonDeckConfguration>
+            DecksConfiguration: new Dictionary<long, JsonDeckConfguration>
             {
+                [AnkiCollection.DefaultDeckId] = new JsonDeckConfguration
                 {
-                    1,
-                    new JsonDeckConfguration
+                    Id = 1,
+                    LastModificationTime = 0,
+                    Name = AnkiCollection.DefaultDeckName,
+                    UpdateSequenceNumber = 0,
+                    AutoplayQuestionAudio = true,
+                    ReplayQuestionAudio = true,
+                    ShowTimer = 0,
+                    IsDynamic = false,
+                    StopTimerAfterSeconds = 0,
+                    LapseCardsConfiguration = new JsonLapseCardsConfiguration
                     {
-                        Id = 1,
-                        LastModificationTime = 0,
-                        Name = "Default",
-                        UpdateSequenceNumber = 0,
-                        AutoplayQuestionAudio = true,
-                        ReplayQuestionAudio = true,
-                        ShowTimer = 0,
-                        IsDynamic = false,
-                        StopTimerAfterSeconds = 0,
-                        LapseCardsConfiguration = new JsonLapseCardsConfiguration
-                        {
-                            Delays = new[]{ 10f },
-                            LapsedIntervalMultiplierPercent = 0,
-                            LeechAction = 1,
-                            LeechFailsAllowedCount = 8,
-                            MinimumInterfalAfterLeech = 1
-                        },
-                        NewCardsConfiguration = new JsonNewCardsConfiguration
-                        {
-                            Bury = false,
-                            Delays = new[] { 1f, 10f },
-                            InitialEaseFactor = 2500,
-                            IntDelays = new[] { 1, 4, 0 },
-                            NewCardsPerDay = 20,
-                            NewCardsShowOrder = 1,
-                            Separate = 0
-                        },
-                        ReviewCardsConfiguration = new JsonReviewCardsConfiguration
-                        {
-                            Bury = false,
-                            CardsToReviewPerDay = 200,
-                            Ease4 = 1.3f,
-                            Fuzz = 0,
-                            HardFactor = 1.2f,
-                            IntervalMultiplicationFactor = 1,
-                            MaximumReviewInterval = 36500,
-                            MinSpace = 0
-                        }
+                        Delays = [10f],
+                        LapsedIntervalMultiplierPercent = 0,
+                        LeechAction = 1,
+                        LeechFailsAllowedCount = 8,
+                        MinimumInterfalAfterLeech = 1
+                    },
+                    NewCardsConfiguration = new JsonNewCardsConfiguration
+                    {
+                        Bury = false,
+                        Delays = [1f, 10f],
+                        InitialEaseFactor = 2500,
+                        IntDelays = [1, 4, 0],
+                        NewCardsPerDay = 20,
+                        NewCardsShowOrder = 1,
+                        Separate = 0
+                    },
+                    ReviewCardsConfiguration = new JsonReviewCardsConfiguration
+                    {
+                        Bury = false,
+                        CardsToReviewPerDay = 200,
+                        Ease4 = 1.3f,
+                        Fuzz = 0,
+                        HardFactor = 1.2f,
+                        IntervalMultiplicationFactor = 1,
+                        MaximumReviewInterval = 36500,
+                        MinSpace = 0
                     }
                 }
             },
-            "{}"
+            Tags: "{}"
         );
 
         var allCards = collection.Decks.SelectMany(d => d.Cards).ToArray();
         var allNotes = allCards.Select(d => d.Note).Distinct().ToArray();
         var deckIdByCardId = collection.Decks
-            .SelectMany(d => d.Cards.ToDictionary(c => c.Id, c => d.Id))
-            .ToDictionary(d => d.Key, d => d.Value);
+            .SelectMany(deck => deck.Cards.Select(card => (DeckId: deck.Id, CardId: card.Id)))
+            .ToDictionary(entry => entry.CardId, entry => entry.DeckId);
 
-        result.Notes = allNotes.Select(n => new Note(
-            n.Id,
-            Guid.NewGuid().ToString().Substring(0, 10),
-            n.NoteTypeId,
-            0,
-            0,
-            "",
-            n.Fields,
-            n.Fields[0], // TODO Check this is correct
-            0, // TODO Check this is correct
-            0,
-            ""
-        )).ToArray();
+        return result with
+        {
+            Notes = allNotes.Select(n => new Note(
+                Id: n.Id,
+                Guid: Guid.NewGuid().ToString().Substring(0, 10),
+                ModelId: n.NoteTypeId,
+                ModificationDateTime: 0,
+                UpdateSequenceNumber: 0,
+                Tags: string.Empty,
+                Fields: n.FieldValues.ToArray(),
+                SortField: n.FieldValues[0], // TODO Check this is correct
+                FieldChecksum: 0, // TODO Check this is correct
+                Flags: 0,
+                Data: string.Empty
+            )).ToImmutableArray(),
 
-        result.Cards = allCards.Select(c => new Card(
-            c.Id,
-            c.Note.Id,
-            deckIdByCardId[c.Id],
-            c.NoteCardTypeOrdinal,
-            0,
-            0,
-            CardLearningType.New,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            ""
-        )).ToArray();
+            Cards = allCards.Select(c => new Card(
+                Id: c.Id,
+                NoteId: c.Note.Id,
+                DeckId: deckIdByCardId[c.Id],
+                Ordinal: c.NoteCardTypeOrdinal,
+                ModificationTime: 0,
+                UpdateSequenceNumber: 0,
+                LearningType: CardLearningType.New,
+                Queue: 0,
+                Due: 0,
+                Interval: 0,
+                EaseFactor: 0,
+                ReviewsCount: 0,
+                LapsesCount: 0,
+                Left: 0,
+                OriginalDue: 0,
+                OriginalDid: 0,
+                Flags: 0,
+                Data: string.Empty
+            )).ToImmutableArray(),
 
-        result.RevLogs = Array.Empty<RevisionLog>();
-        result.Graves = Array.Empty<Grave>();
-        
-        return result;
+            RevLogs = ImmutableArray<RevisionLog>.Empty,
+
+            Graves = ImmutableArray<Grave>.Empty,
+        };
     }
 
     public AnkiCollection ConvertCollectionToAnkiCollection(Collection collection)
     {
         var resultCollection = new AnkiCollection();
 
-        foreach (var model in collection.Models.Values)
+        // Add the note types.
         {
-            var cardTypes = model.CardTemplates.Select(ct =>
-            {
-                return new AnkiCardType(
-                    ct.TemplateName,
-                    ct.TemplateOrdinal,
-                    ct.QuestionFormat,
-                    ct.AnswerFormat
-                );
-            }).ToArray();
+            var noteTypes = collection.Models.Values
+                .Select(model => new AnkiNoteType(
+                    id: model.Id,
+                    name: model.Name,
+                    cardTypes: model.CardTemplates.Select(cardTemplate => new AnkiCardType(
+                        Name: cardTemplate.TemplateName,
+                        Ordinal: cardTemplate.TemplateOrdinal,
+                        QuestionFormat: cardTemplate.QuestionFormat,
+                        AnswerFormat: cardTemplate.AnswerFormat
+                    )),
+                    fieldNames: model.Fields.Select(field => field.FieldName),
+                    css: model.Css
+                ));
 
-            var fields = model.Fields.Select(field =>
+            foreach (var noteType in noteTypes)
             {
-                return field.FieldName;
-            }).ToArray();
-
-            var noteType = new AnkiNoteType(model.Id, model.Name, cardTypes, fields, model.Css);
-            resultCollection.AddNoteType(noteType);
+                resultCollection.AddNoteType(noteType);
+            }
         }
 
-        // Add the decks.
-        foreach (var deck in collection.Decks.Values)
+        // Add the decks (except the default deck because AnkiCollection already has it).
         {
-            if (deck.Id == 1)
+            var decks = collection.Decks.Values
+                .Where(deck => deck.Id != AnkiCollection.DefaultDeckId)
+                .Select(deck => new AnkiDeck(
+                    id: deck.Id,
+                    name: deck.Name));
+
+            foreach (var deck in decks)
             {
-                // Do not add default deck as AnkiCollection already has it.
-                continue;
+                resultCollection.AddDeck(deck);
             }
-            resultCollection.AddDeck(deck.Id, deck.Name);
         }
 
         // Add the notes and their associated cards, keeping the existing ids.
-        var cardsByNoteId = collection.Cards.ToLookup(c => c.NoteId);
-        foreach (var note in collection.Notes)
         {
-            var cardsForThisNote = cardsByNoteId[note.Id]; // TODO Error handling
-            var deckId = cardsForThisNote.Select(c => c.DeckId).Distinct().Single(); // TODO Error handling
+            var cardsByNoteId = collection.Cards.ToLookup(c => c.NoteId);
 
-            var ids = cardsForThisNote.Select(c => (c.Ordinal, c.Id)).ToArray();
+            foreach (var note in collection.Notes)
+            {
+                var cardsForThisNote = cardsByNoteId[note.Id]; // TODO Error handling
+                var deckId = cardsForThisNote.Select(c => c.DeckId).Distinct().Single(); // TODO Error handling
 
-            resultCollection.AddNoteWithCards(note.Id, deckId, note.ModelId, note.Fields, ids);
+                var ids = cardsForThisNote.Select(c => (c.Ordinal, c.Id)).ToArray();
+
+                resultCollection.AddNoteWithCards(note.Id, deckId, note.ModelId, note.Fields, ids);
+            }
         }
 
         // Ignore RevLogs and Graves

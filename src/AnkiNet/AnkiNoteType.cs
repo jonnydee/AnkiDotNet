@@ -1,4 +1,6 @@
-﻿namespace AnkiNet;
+﻿using System.Collections.Immutable;
+
+namespace AnkiNet;
 
 /// <summary>
 /// Defines an Anki note (or model) used as a template to create one or several cards.
@@ -19,12 +21,12 @@ public readonly record struct AnkiNoteType
     /// <summary>
     /// Card types (templates) of the note type.
     /// </summary>
-    public AnkiCardType[] CardTypes { get; }
+    public ImmutableArray<AnkiCardType> CardTypes { get; }
 
     /// <summary>
     /// Field names of the note type, used in the <see cref="AnkiCardType"/> templates.
     /// </summary>
-    public string[] FieldNames { get; }
+    public ImmutableArray<string> FieldNames { get; }
 
     /// <summary>
     /// CSS to apply on the <see cref="AnkiCardType"/> templates.
@@ -39,17 +41,31 @@ public readonly record struct AnkiNoteType
     /// <param name="cardTypes">Card types (templates) of the note type.</param>
     /// <param name="fieldNames">Field names of the note type, used in the <see cref="AnkiCardType"/> templates.</param>
     /// <param name="css">CSS to apply on the <see cref="AnkiCardType"/> templates</param>
-    internal AnkiNoteType(long id, string name, AnkiCardType[] cardTypes, string[] fieldNames, string? css)
+    internal AnkiNoteType(long id, string name, IEnumerable<AnkiCardType> cardTypes, IEnumerable<string> fieldNames, string? css)
     {
-        if (cardTypes.Length < 1)
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNull(cardTypes);
+        ArgumentNullException.ThrowIfNull(fieldNames);
+
+        Id = id;
+        Name = name;
+        CardTypes = cardTypes.ToImmutableArray();
+        FieldNames = fieldNames.ToImmutableArray();
+        Css = css;
+
+        if (CardTypes.Length < 1)
         {
             throw new ArgumentException("AnkiNoteType needs at least one AnkiCardType");
         }
 
-        Id = id;
-        Name = name;
-        CardTypes = cardTypes;
-        FieldNames = fieldNames;
-        Css = css;
+        if (cardTypes.DistinctBy(ct => ct.Name).Count() != CardTypes.Length)
+        {
+            throw new ArgumentException("AnkiNoteType cannot have duplicate AnkiCardType names");
+        }
+
+        if (FieldNames.Distinct().Count() != FieldNames.Length)
+        {
+            throw new ArgumentException("AnkiNoteType cannot have duplicate field names");
+        }
     }
 }

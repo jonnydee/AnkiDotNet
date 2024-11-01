@@ -1,6 +1,6 @@
 ﻿namespace AnkiNet.CollectionFile.Model;
 
-internal record RevisionLog(
+internal readonly record struct RevisionLog(
     long Id, // Timestamp
     long CardId,
     long UpdateSequenceNumber,
@@ -14,24 +14,27 @@ internal record RevisionLog(
 {
     public RevisionEaseType GetEaseType()
     {
-        if (RevisionType == RevisionType.Review)
+        switch (RevisionType)
         {
-            switch(Ease)
-            {
-                case 1: return RevisionEaseType.Wrong;
-                case 2: return RevisionEaseType.Hard;
-                case 3: return RevisionEaseType.Ok;
-                case 4: return RevisionEaseType.Easy;
-            }
-        }
-        else if (RevisionType == RevisionType.Learn || RevisionType == RevisionType.Relearn)
-        {
-            switch (Ease)
-            {
-                case 1: return RevisionEaseType.Wrong;
-                case 2: return RevisionEaseType.Ok;
-                case 3: return RevisionEaseType.Easy;
-            }
+            case RevisionType.Review:
+                return Ease switch
+                {
+                    1 => RevisionEaseType.Wrong,
+                    2 => RevisionEaseType.Hard,
+                    3 => RevisionEaseType.Ok,
+                    4 => RevisionEaseType.Easy,
+                    _ => throw new InvalidOperationException(),
+                };
+
+            case RevisionType.Learn:
+            case RevisionType.Relearn:
+                return Ease switch
+                {
+                    1 => RevisionEaseType.Wrong,
+                    2 => RevisionEaseType.Ok,
+                    3 => RevisionEaseType.Easy,
+                    _ => throw new InvalidOperationException(),
+                };
         }
 
         throw new InvalidOperationException();

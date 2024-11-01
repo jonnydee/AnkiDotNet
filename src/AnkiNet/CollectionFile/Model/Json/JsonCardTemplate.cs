@@ -8,7 +8,7 @@ internal class JsonCardTemplate
     /// Template name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string TemplateName { get; set; }
+    public string TemplateName { get; set; } = string.Empty;
 
     /// <summary>
     /// Template number, see JsonField Fields attribute in JsonModel (flds).
@@ -26,32 +26,32 @@ internal class JsonCardTemplate
     /// Answer template string.
     /// </summary>
     [JsonPropertyName("afmt")]
-    public string AnswerFormat { get; set; }
+    public string AnswerFormat { get; set; } = string.Empty;
 
     /// <summary>
     /// Browser answer format: used for displaying answer in browser.
     /// </summary>
     [JsonPropertyName("bafmt")]
-    public string BrowserAnswerFormat { get; set; }
+    public string BrowserAnswerFormat { get; set; } = string.Empty;
 
     /// <summary>
     /// Question format string.
     /// </summary>
     [JsonPropertyName("qfmt")]
-    public string QuestionFormat { get; set; }
+    public string QuestionFormat { get; set; } = string.Empty;
     //qfmt : "question format string"
 
     /// <summary>
     /// Browser question format: used for displaying question in browser.
     /// </summary>
     [JsonPropertyName("bqfmt")]
-    public string BrowserQuestionFormat { get; set; }
+    public string BrowserQuestionFormat { get; set; } = string.Empty;
 
     /// <summary>
     /// Undocumented.
     /// </summary>
     [JsonPropertyName("bfont")]
-    public string BFont { get; set; }
+    public string BFont { get; set; } = string.Empty;
 
     /// <summary>
     /// Undocumented.

@@ -5,11 +5,11 @@ namespace AnkiNet.CollectionFile.Model.Json;
 internal class JsonLapseCardsConfiguration
 {
 	/// <summary>
-    /// TODO Is this description correct?
+	/// TODO Is this description correct?
 	/// The list of successive delay between the learning steps of the new cards, as explained in the manual.
 	/// </summary>
 	[JsonPropertyName("delays")]
-	public float[] Delays { get; set; }
+	public float[] Delays { get; set; } = [];
 
 	/// <summary>
 	/// What to do to leech cards. 0 for suspend, 1 for mark.

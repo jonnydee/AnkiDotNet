@@ -1,11 +1,13 @@
-﻿namespace AnkiNet;
+﻿using System.Collections.Immutable;
+
+namespace AnkiNet;
 
 /// <summary>
 /// Represents an Anki deck, a collection of <see cref="AnkiCard"/>s.
 /// </summary>
-public readonly record struct AnkiDeck
+public class AnkiDeck
 {
-    private readonly List<AnkiCard> _cards;
+    private readonly List<AnkiCard> _cards = [];
 
     /// <summary>
     /// Id of the deck.
@@ -20,13 +22,12 @@ public readonly record struct AnkiDeck
     /// <summary>
     /// Returns a deep copy of this deck's cards.
     /// </summary>
-    public AnkiCard[] Cards => _cards.ToArray();
+    public ImmutableArray<AnkiCard> Cards => _cards.ToImmutableArray();
 
     internal AnkiDeck(long id, string name)
     {
         Id = id;
         Name = name;
-        _cards = new List<AnkiCard>();
     }
 
     internal void AddCard(AnkiCard card)

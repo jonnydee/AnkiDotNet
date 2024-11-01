@@ -13,8 +13,8 @@ public class AnkiCollectionTests
         collection.Decks.Should().HaveCount(1);
 
         var defaultDeck = collection.Decks.Single();
-        defaultDeck.Name.Should().Be("Default");
-        defaultDeck.Id.Should().Be(1);
+        defaultDeck.Name.Should().Be(AnkiCollection.DefaultDeckName);
+        defaultDeck.Id.Should().Be(AnkiCollection.DefaultDeckId);
     }
 
     [Fact]
@@ -38,7 +38,11 @@ public class AnkiCollectionTests
         var createAnkiCollection = () => collection.CreateNoteType(
             name: "NT",
             cardTypes: [
-                new AnkiCardType(Name: "Name", Ordinal: 0, QuestionFormat: "Q", AnswerFormat: "A")
+                new AnkiCardType(
+                    Name: "Name",
+                    Ordinal: 0,
+                    QuestionFormat: "Q",
+                    AnswerFormat: "A")
             ],
             fieldNames: ["A", "B"],
             css: "Css");
@@ -50,7 +54,7 @@ public class AnkiCollectionTests
     public void AnkiCollection_Cannot_Add_Deck_With_Default_Name()
     {
         var collection = new AnkiCollection();
-        var addDeck = () => _ = collection.CreateDeck("Default");
+        var addDeck = () => _ = collection.CreateDeck(name: AnkiCollection.DefaultDeckName);
         addDeck.Should().ThrowExactly<ArgumentException>();
     }
 
@@ -58,7 +62,11 @@ public class AnkiCollectionTests
     public void AnkiCollection_Cannot_Add_Deck_With_Default_Id_1()
     {
         var collection = new AnkiCollection();
-        var addDeck = () => collection.AddDeck(1, "Some deck");
+
+        var addDeck = () => collection.AddDeck(new AnkiDeck(
+            id: AnkiCollection.DefaultDeckId,
+            name: "Some deck"));
+        
         addDeck.Should().ThrowExactly<ArgumentException>();
     }
 
@@ -66,8 +74,8 @@ public class AnkiCollectionTests
     public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Name()
     {
         var collection = new AnkiCollection();
-        _ = collection.CreateDeck("New");
-        var addDeck = () => _ = collection.CreateDeck("New");
+        _ = collection.CreateDeck(name: "New");
+        var addDeck = () => _ = collection.CreateDeck(name: "New");
         addDeck.Should().ThrowExactly<ArgumentException>();
     }
 
@@ -75,8 +83,15 @@ public class AnkiCollectionTests
     public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Id()
     {
         var collection = new AnkiCollection();
-        collection.AddDeck(15, "New deck 1");
-        var addDeck = () => collection.AddDeck(15, "New deck 2");
+
+        collection.AddDeck(new AnkiDeck(
+            id: 15,
+            name: "New deck 1"));
+
+        var addDeck = () => collection.AddDeck(new AnkiDeck(
+            id: 15,
+            name: "New deck 2"));
+
         addDeck.Should().ThrowExactly<ArgumentException>();
     }
 
@@ -84,24 +99,29 @@ public class AnkiCollectionTests
     public void AnkiCollection_AddNote_With_Unknown_Deck_Id_Throws()
     {
         var collection = new AnkiCollection();
+
         var addNote = () => collection.CreateNote(
-            50,
-            1,
-            "A", "B"
+            deckId: 50,
+            noteTypeId: 1,
+            fields: ["A", "B"]
         );
+
         addNote.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
     public void AnkiCollection_AddNote_With_Unknown_NoteTypeId_Throws()
     {
-        var collection = new AnkiCollection();
         const int unknownNoteTypeId = 15;
+        
+        var collection = new AnkiCollection();
+        
         var addNote = () => collection.CreateNote(
-            1,
-            unknownNoteTypeId,
-            "A", "B"
+            deckId: 1,
+            noteTypeId: unknownNoteTypeId,
+            fields: ["A", "B"]
         );
+        
         addNote.Should().ThrowExactly<ArgumentException>();
     }
 
@@ -133,18 +153,18 @@ public class AnkiCollectionTests
         var defaultDeck = collection.DefaultDeck;
         defaultDeck.Cards.Should().BeEmpty();
 
-        collection.CreateNote(defaultDeck.Id, noteTypeId, "A", "B");
+        collection.CreateNote(defaultDeck.Id, noteTypeId, fields: ["A", "B"]);
 
         defaultDeck.Cards.Should().HaveCount(2);
         var card1 = defaultDeck.Cards[0];
         var card2 = defaultDeck.Cards[1];
 
         card1.Note.NoteTypeId.Should().Be(noteTypeId);
-        card1.Note.Fields.Should().Equal("A", "B");
+        card1.Note.FieldValues.Should().Equal("A", "B");
         card1.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal1);
 
         card2.Note.NoteTypeId.Should().Be(noteTypeId);
-        card2.Note.Fields.Should().Equal("A", "B");
+        card2.Note.FieldValues.Should().Equal("A", "B");
         card2.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal2);
     }
 
@@ -173,11 +193,11 @@ public class AnkiCollectionTests
             css: "css");
 
         // Create a deck
-        var deckId = collection.CreateDeck("Indonesian vocabulary");
+        var deckId = collection.CreateDeck(name: "Indonesian vocabulary");
 
         // Create notes, using the note type idx
-        collection.CreateNote(deckId, noteTypeId, "Bunga", "Flower");
-        collection.CreateNote(deckId, noteTypeId, "Kucing", "Cat");
+        collection.CreateNote(deckId, noteTypeId, fields: ["Bunga", "Flower"]);
+        collection.CreateNote(deckId, noteTypeId, fields: ["Kucing", "Cat"]);
 
         // Check the resulting cards
         var allDecks = collection.Decks;
@@ -187,14 +207,14 @@ public class AnkiCollectionTests
         foreach (var c in deck1!.Cards)
         {
             // Read the fields
-            var fields = c.Note.Fields;
+            var fields = c.Note.FieldValues;
         }
     }
 
     [Fact]
     public void AddSeveralNoteTypes_NoIdClash()
     {
-        var cardTypes = new[] { new AnkiCardType("CT", 0, "", "") };
+        var cardTypes = new[] { new AnkiCardType(Name: "CT", Ordinal: 0, QuestionFormat: "", AnswerFormat: "") };
         var fields = new[] { "F1", "F2" };
         var css = "";
 

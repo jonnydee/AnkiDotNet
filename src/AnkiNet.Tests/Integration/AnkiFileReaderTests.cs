@@ -17,7 +17,7 @@ public class AnkiFileReaderTests
 
         var expectedDecks = new[]
         {
-            new AnkiDeck(1, "Default"),
+            new AnkiDeck(AnkiCollection.DefaultDeckId, AnkiCollection.DefaultDeckName),
             new AnkiDeck(1661780077840, "Japanese::YouTube::1. Premiers mots en kanji"),
             new AnkiDeck(1663496509878, "Japanese"),
             new AnkiDeck(1663496546962, "Japanese::YouTube"),
@@ -88,26 +88,26 @@ background-color: blue;
         var noteTypeId = 1661780059778L;
         var expectedJapaneseDeckCards = new[]
         {
-            new AnkiCard(1661780059803L, new AnkiNote(1661780059797L, noteTypeId, "人【ひと】", "person; someone; somebody"), 0),
-            new AnkiCard(1661780059806L, new AnkiNote(1661780059804L, noteTypeId, "男【おとこ】", "man; male"), 0),
-            new AnkiCard(1661780059808L, new AnkiNote(1661780059807L, noteTypeId, "女【おんな】", "female; woman; female sex"), 0),
-            new AnkiCard(1661780059810L, new AnkiNote(1661780059809L, noteTypeId, "子【こ】", "child; kid; teenager; youngster; young (non-adult) person"), 0),
-            new AnkiCard(1661780059813L, new AnkiNote(1661780059811L, noteTypeId, "日【ひ】", "day; days"), 0),
-            new AnkiCard(1661780059815L, new AnkiNote(1661780059814L, noteTypeId, "月【つき】", "Moon"), 0),
-            new AnkiCard(1661780059817L, new AnkiNote(1661780059816L, noteTypeId, "時【とき】", "time; hour; moment"), 0),
-            new AnkiCard(1661780059820L, new AnkiNote(1661780059819L, noteTypeId, "水【みず】", "water (esp. cool, fresh water, e.g. drinking water)"), 0),
-            new AnkiCard(1661780059822L, new AnkiNote(1661780059821L, noteTypeId, "火【ひ】", "fire; flame; blaze"), 0),
-            new AnkiCard(1661780059824L, new AnkiNote(1661780059823L, noteTypeId, "土【つち】", "earth; soil; dirt; clay; mud"), 0),
-            new AnkiCard(1661780059825L, new AnkiNote(1661780059825L, noteTypeId, "風【かぜ】", "wind; breeze; draught; draft"), 0),
-            new AnkiCard(1661780059827L, new AnkiNote(1661780059826L, noteTypeId, "空【そら】", "sky; the air; the heavens"), 0),
-            new AnkiCard(1661780059829L, new AnkiNote(1661780059828L, noteTypeId, "山【やま】", "mountain; hill"), 0),
-            new AnkiCard(1661780059831L, new AnkiNote(1661780059830L, noteTypeId, "川【かわ】", "river; stream"), 0),
-            new AnkiCard(1661780059834L, new AnkiNote(1661780059832L, noteTypeId, "木【き】", "tree; shrub; bush"), 0),
-            new AnkiCard(1661780059836L, new AnkiNote(1661780059835L, noteTypeId, "花【はな】", "flower; blossom; bloom; petal"), 0),
-            new AnkiCard(1661780059838L, new AnkiNote(1661780059837L, noteTypeId, "雨【あめ】", "rain"), 0),
-            new AnkiCard(1661780059840L, new AnkiNote(1661780059839L, noteTypeId, "雪【ゆき】", "snow; snowfall"), 0),
-            new AnkiCard(1661780059841L, new AnkiNote(1661780059840L, noteTypeId, "金【かね】", "money"), 0),
-            new AnkiCard(1661780059843L, new AnkiNote(1661780059843L, noteTypeId, "刀【かたな】", "sword (esp. Japanese single-edged); katana"), 0),
+            new AnkiCard(1661780059803L, new AnkiNote(1661780059797L, noteTypeId, ["人【ひと】", "person; someone; somebody"]), 0),
+            new AnkiCard(1661780059806L, new AnkiNote(1661780059804L, noteTypeId, ["男【おとこ】", "man; male"]), 0),
+            new AnkiCard(1661780059808L, new AnkiNote(1661780059807L, noteTypeId, ["女【おんな】", "female; woman; female sex"]), 0),
+            new AnkiCard(1661780059810L, new AnkiNote(1661780059809L, noteTypeId, ["子【こ】", "child; kid; teenager; youngster; young (non-adult) person"]), 0),
+            new AnkiCard(1661780059813L, new AnkiNote(1661780059811L, noteTypeId, ["日【ひ】", "day; days"]), 0),
+            new AnkiCard(1661780059815L, new AnkiNote(1661780059814L, noteTypeId, ["月【つき】", "Moon"]), 0),
+            new AnkiCard(1661780059817L, new AnkiNote(1661780059816L, noteTypeId, ["時【とき】", "time; hour; moment"]), 0),
+            new AnkiCard(1661780059820L, new AnkiNote(1661780059819L, noteTypeId, ["水【みず】", "water (esp. cool, fresh water, e.g. drinking water)"]), 0),
+            new AnkiCard(1661780059822L, new AnkiNote(1661780059821L, noteTypeId, ["火【ひ】", "fire; flame; blaze"]), 0),
+            new AnkiCard(1661780059824L, new AnkiNote(1661780059823L, noteTypeId, ["土【つち】", "earth; soil; dirt; clay; mud"]), 0),
+            new AnkiCard(1661780059825L, new AnkiNote(1661780059825L, noteTypeId, ["風【かぜ】", "wind; breeze; draught; draft"]), 0),
+            new AnkiCard(1661780059827L, new AnkiNote(1661780059826L, noteTypeId, ["空【そら】", "sky; the air; the heavens"]), 0),
+            new AnkiCard(1661780059829L, new AnkiNote(1661780059828L, noteTypeId, ["山【やま】", "mountain; hill"]), 0),
+            new AnkiCard(1661780059831L, new AnkiNote(1661780059830L, noteTypeId, ["川【かわ】", "river; stream"]), 0),
+            new AnkiCard(1661780059834L, new AnkiNote(1661780059832L, noteTypeId, ["木【き】", "tree; shrub; bush"]), 0),
+            new AnkiCard(1661780059836L, new AnkiNote(1661780059835L, noteTypeId, ["花【はな】", "flower; blossom; bloom; petal"]), 0),
+            new AnkiCard(1661780059838L, new AnkiNote(1661780059837L, noteTypeId, ["雨【あめ】", "rain"]), 0),
+            new AnkiCard(1661780059840L, new AnkiNote(1661780059839L, noteTypeId, ["雪【ゆき】", "snow; snowfall"]), 0),
+            new AnkiCard(1661780059841L, new AnkiNote(1661780059840L, noteTypeId, ["金【かね】", "money"]), 0),
+            new AnkiCard(1661780059843L, new AnkiNote(1661780059843L, noteTypeId, ["刀【かたな】", "sword (esp. Japanese single-edged); katana"]), 0),
         };
 
         collection.Decks[1].Cards.Should().BeEquivalentTo(
@@ -128,7 +128,7 @@ background-color: blue;
         collection.Decks[1].Cards.Should().HaveCount(16);
         var card = collection.Decks[1].Cards.First();
 
-        card.Note.Fields.Should().Equal("Bunga", "Flower");
+        card.Note.FieldValues.Should().Equal("Bunga", "Flower");
     }
 
     [Fact]

@@ -14,7 +14,7 @@ internal class JsonModel
     /// Model name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Modification time in seconds. // TODO Use DateTime?
@@ -26,7 +26,7 @@ internal class JsonModel
     /// CSS, shared for all templates.
     /// </summary>
     [JsonPropertyName("css")]
-    public string Css { get; set; }
+    public string Css { get; set; } = string.Empty;
 
     /// <summary>
     /// Long specifying the id of the deck that cards are added to by default.
@@ -51,19 +51,19 @@ internal class JsonModel
     /// Legacy version number (unused), use an empty array [].
     /// </summary>
     [JsonPropertyName("vers")]
-    public int[] LegacyVersionNumber { get; set; }
+    public int[] LegacyVersionNumber { get; set; } = [];
 
     /// <summary>
     /// String added to end of LaTeX expressions (usually \\end{document}).
     /// </summary>
     [JsonPropertyName("latexPost")]
-    public string LatexPost { get; set; }
+    public string LatexPost { get; set; } = string.Empty;
 
     /// <summary>
     /// Preamble string for LaTeX expressions.
     /// </summary>
     [JsonPropertyName("latexPre")]
-    public string LatexPre { get; set; }
+    public string LatexPre { get; set; } = string.Empty;
 
     /// <summary>
     /// Undocumented.
@@ -81,19 +81,19 @@ internal class JsonModel
     /// Anki saves the tags of the last added note to the current model, use an empty array [].
     /// </summary>
     [JsonPropertyName("tags")]
-    public string[] LastAddedNoteTags { get; set; }
+    public string[] LastAddedNoteTags { get; set; } = [];
 
     /// <summary>
     /// JSONArray containing object of CardTemplate for each card in model.
     /// </summary>
     [JsonPropertyName("tmpls")]
-    public JsonCardTemplate[] CardTemplates { get; set; }
+    public JsonCardTemplate[] CardTemplates { get; set; } = [];
 
     /// <summary>
     /// JSONArray containing object for each field in the model.
     /// </summary>
     [JsonPropertyName("flds")]
-    public JsonField[] Fields { get; set; }
+    public JsonField[] Fields { get; set; } = [];
 
     /// <summary>
     /// req is unused in modern clients. May exist for backwards compatibility.
@@ -115,5 +115,5 @@ internal class JsonModel
     /// Example: [[0, "any", [0]]]
     /// </summary>
     [JsonPropertyName("req")]
-    public object[] RequiredFields { get; set; }
+    public object[] RequiredFields { get; set; } = [];
 }

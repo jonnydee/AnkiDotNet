@@ -20,7 +20,7 @@ internal class JsonDeck
     /// Name of the deck.
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Update sequence number.
@@ -34,7 +34,7 @@ internal class JsonDeck
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
     [JsonPropertyName("newToday")]
-    public int[] NewToday { get; set; }
+    public int[] NewToday { get; set; } = [];
 
     /// <summary>
     /// Two number array.
@@ -42,7 +42,7 @@ internal class JsonDeck
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
     [JsonPropertyName("revToday")]
-    public int[] ReviewedToday { get; set; }
+    public int[] ReviewedToday { get; set; } = [];
 
     /// <summary>
     /// Two number array.
@@ -50,13 +50,13 @@ internal class JsonDeck
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
     [JsonPropertyName("lrnToday")]
-    public int[] LearnedToday { get; set; }
+    public int[] LearnedToday { get; set; } = [];
 
     /// <summary>
     /// Two number array used somehow for custom study. Currently unused in the code.
     /// </summary>
     [JsonPropertyName("timeToday")]
-    public int[] TimeToday { get; set; }
+    public int[] TimeToday { get; set; } = [];
 
     /// <summary>
     /// True when deck is collapsed.
@@ -74,7 +74,7 @@ internal class JsonDeck
     /// Deck's description.
     /// </summary>
     [JsonPropertyName("desc")]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>
     /// 1 if dynamic (aka. filtered) deck.

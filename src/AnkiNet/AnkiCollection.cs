@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("AnkiNet.Tests")]
@@ -10,37 +11,31 @@ namespace AnkiNet;
 /// </summary>
 public class AnkiCollection
 {
-    private const long DefaultDeckId = 1L;
-    private const string DefaultDeckName = "Default";
+    internal const long DefaultDeckId = 1L;
+    internal const string DefaultDeckName = "Default";
 
-    private readonly Dictionary<long, AnkiNoteType> _noteTypes;
-    private readonly Dictionary<long, AnkiDeck> _decks;
-    private readonly Dictionary<long, AnkiNote> _notes;
-    private readonly Dictionary<long, AnkiCard> _cards;
+    private readonly Dictionary<long, AnkiNoteType> _noteTypes = [];
+    private readonly Dictionary<long, AnkiDeck> _decks = [];
+    private readonly Dictionary<long, AnkiNote> _notes = [];
+    private readonly Dictionary<long, AnkiCard> _cards = [];
 
     /// <summary>
     /// Create a new Anki collection.
     /// </summary>
     public AnkiCollection()
     {
-        _noteTypes = new Dictionary<long, AnkiNoteType>();
-        _decks = new Dictionary<long, AnkiDeck>
-        {
-            {DefaultDeckId, new(DefaultDeckId, DefaultDeckName)}
-        };
-        _notes = new Dictionary<long, AnkiNote>();
-        _cards = new Dictionary<long, AnkiCard>();
+        AddDeck(new AnkiDeck(DefaultDeckId, DefaultDeckName));
     }
 
     /// <summary>
     /// Lists all decks of the collection.
     /// </summary>
-    public AnkiDeck[] Decks => _decks.Values.ToArray();
+    public ImmutableArray<AnkiDeck> Decks => _decks.Values.ToImmutableArray();
 
     /// <summary>
     /// Returns a deep copy of all the <see cref="AnkiNoteType"/> of the collection.
     /// </summary>
-    public AnkiNoteType[] NoteTypes => _noteTypes.Values.ToArray();
+    public ImmutableArray<AnkiNoteType> NoteTypes => _noteTypes.Values.ToImmutableArray();
 
     /// <summary>
     /// Get the default deck (with id 1) of the collection.
@@ -119,7 +114,10 @@ public class AnkiCollection
     public long CreateDeck(string name)
     {
         var newId = IdFactory.Create(idExists: _decks.ContainsKey);
-        AddDeck(newId, name);
+
+        var deck = new AnkiDeck(newId, name);
+        AddDeck(deck);
+        
         return newId;
     }
 
@@ -137,31 +135,45 @@ public class AnkiCollection
             throw new ArgumentException($"Unknown deck id '{deckId} in this collection");
         }
 
-        if (!_noteTypes.TryGetValue(noteTypeId, out var existingNoteType))
-        {
-            throw new ArgumentException($"Unknown note type '{noteTypeId}' in this collection");
-        }
-
-        if (fields.Length > existingNoteType.FieldNames.Length)
-        {
-            throw new ArgumentException($"Cannot create a note with more fields ({fields.Length}) than the note type ({existingNoteType.FieldNames.Length})");
-        }
-
-        var newNoteId = IdFactory.Create(idExists: _notes.ContainsKey);
-
         // Create the single note
-        var note = new AnkiNote(newNoteId, existingNoteType.Id, fields);
-        _notes.Add(newNoteId, note);
+        var newNoteId = IdFactory.Create(idExists: _notes.ContainsKey);
+        var note = new AnkiNote(newNoteId, noteTypeId, fields);
+        AddNote(note);
 
         // Create at least one card type
-        foreach (var cardType in existingNoteType.CardTypes)
+        var noteType = _noteTypes[noteTypeId];
+        foreach (var cardType in noteType.CardTypes)
         {
             var newCardId = IdFactory.Create(idExists: _cards.ContainsKey);
-
             var newCard = new AnkiCard(newCardId, note, cardType.Ordinal);
-            _cards.Add(newCardId, newCard);
-            _decks[deckId].AddCard(newCard);
+            AddCard(deckId, newCard);
         }
+    }
+
+    internal void AddCard(long deckId, AnkiCard card)
+    {
+        if (!_decks.TryGetValue(deckId, out var deck))
+        {
+            throw new ArgumentException($"Unknown deck id '{deckId} in this collection");
+        }
+
+        _cards.Add(card.Id, card);
+        deck.AddCard(card);
+    }
+
+    internal void AddNote(AnkiNote note)
+    {
+        if (!_noteTypes.TryGetValue(note.NoteTypeId, out var existingNoteType))
+        {
+            throw new ArgumentException($"Unknown note type '{note.NoteTypeId}' in this collection");
+        }
+
+        if (note.FieldValues.Length > existingNoteType.FieldNames.Length)
+        {
+            throw new ArgumentException($"Cannot create a note with more fields ({note.FieldValues.Length}) than the note type ({existingNoteType.FieldNames.Length})");
+        }
+
+        _notes.Add(note.Id, note);
     }
 
     internal void AddNoteType(AnkiNoteType noteType)
@@ -174,32 +186,30 @@ public class AnkiCollection
         _noteTypes.Add(noteType.Id, noteType);
     }
 
-    internal void AddDeck(long id, string name)
+    internal void AddDeck(AnkiDeck deck)
     {
-        if (_decks.ContainsKey(id))
+        if (_decks.ContainsKey(deck.Id))
         {
-            throw new ArgumentException($"The collection already has a deck with id {id}");
+            throw new ArgumentException($"The collection already has a deck with id {deck.Id}");
         }
 
-        if (_decks.Values.Any(d => d.Name == name))
+        if (_decks.Values.Any(d => d.Name == deck.Name))
         {
-            throw new ArgumentException($"The collection already has a deck with the name {name}");
+            throw new ArgumentException($"The collection already has a deck with the name {deck.Name}");
         }
 
-        var deck = new AnkiDeck(id, name);
-        _decks.Add(id, deck);
+        _decks.Add(deck.Id, deck);
     }
 
     internal void AddNoteWithCards(long noteId, long deckId, long noteTypeId, string[] fields, (long Ordinal, long Id)[] cardIds)
     {
-        var note = new AnkiNote(noteId, noteTypeId, fields);
-        _notes.Add(noteId, note);
+        var note = new AnkiNote(noteId, noteTypeId, fields.ToImmutableArray());
+        AddNote(note);
 
         foreach (var (ordinal, id) in cardIds)
         {
             var newCard = new AnkiCard(id, note, ordinal);
-            _cards.Add(id, newCard);
-            _decks[deckId].AddCard(newCard);
+            AddCard(deckId, newCard);
         }
     }
 }

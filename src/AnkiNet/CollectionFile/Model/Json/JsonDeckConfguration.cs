@@ -20,7 +20,7 @@ internal class JsonDeckConfguration
 	/// The name of the configuration.
 	/// </summary>
 	[JsonPropertyName("name")]
-	public string Name { get; set; }
+	public string Name { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Update Sequence Number.
@@ -62,19 +62,19 @@ internal class JsonDeckConfguration
 	/// The configuration for lapse cards.
 	/// </summary>
 	[JsonPropertyName("lapse")]
-	public JsonLapseCardsConfiguration LapseCardsConfiguration { get; set; }
+	public JsonLapseCardsConfiguration LapseCardsConfiguration { get; set; } = new();
 
 	/// <summary>
 	/// The configuration for new cards.
 	/// </summary>
 	[JsonPropertyName("new")]
-	public JsonNewCardsConfiguration NewCardsConfiguration { get; set; }
+	public JsonNewCardsConfiguration NewCardsConfiguration { get; set; } = new();
 
 	/// <summary>
 	/// The configuration for review cards.
 	/// </summary>
 	[JsonPropertyName("rev")]
-	public JsonReviewCardsConfiguration ReviewCardsConfiguration { get; set; }
+	public JsonReviewCardsConfiguration ReviewCardsConfiguration { get; set; } = new();
 
     /*
 	 * Extra options in json file but not in documentation:

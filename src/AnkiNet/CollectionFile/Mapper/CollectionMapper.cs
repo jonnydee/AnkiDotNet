@@ -21,19 +21,19 @@ internal static class CollectionMapper
         var decksConfiguration = JsonSerializer.Deserialize<Dictionary<long, JsonDeckConfguration>>(col.dconf, SerializerOptions);
 
         return new Collection(
-            col.id,
-            col.crt,
-            col.mod,
-            col.scm,
-            col.ver,
-            col.dty,
-            col.usn,
-            col.ls,
-            configuration,
-            models,
-            decks,
-            decksConfiguration,
-            col.tags
+            Id: col.id,
+            CreationDateTime: col.crt,
+            LastModifiedDateTime: col.mod,
+            SchemaModificationDateTime: col.scm,
+            Version: col.ver,
+            Dirty: col.dty,
+            UpdateSequenceNumber: col.usn,
+            LastSyncDateTime: col.ls,
+            Configuration: configuration!,
+            Models: models!,
+            Decks: decks!,
+            DecksConfiguration: decksConfiguration!,
+            Tags: col.tags
         );
     }
 
@@ -53,10 +53,10 @@ internal static class CollectionMapper
             collection.Dirty,
             collection.UpdateSequenceNumber,
             collection.LastSyncDateTime,
-            conf,
-            models,
-            decks,
-            dconf,
+            conf!,
+            models!,
+            decks!,
+            dconf!,
             collection.Tags
         );
     }

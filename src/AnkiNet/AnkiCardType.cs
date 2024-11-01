@@ -8,7 +8,7 @@
 /// <param name="Ordinal">Order of the card type, in the list of <see cref="AnkiNoteType.CardTypes"/>.</param>
 /// <param name="QuestionFormat">HTML format of the question side of cards created using this card type. Anki template tags can be used.</param>
 /// <param name="AnswerFormat">HTML format of the answer side of cards created using this card type. Anki template tags can be used.</param>
-public record struct AnkiCardType(
+public readonly record struct AnkiCardType(
     string Name,
     long Ordinal,
     string QuestionFormat,

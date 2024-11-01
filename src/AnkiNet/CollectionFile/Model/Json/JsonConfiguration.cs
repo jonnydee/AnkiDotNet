@@ -24,12 +24,12 @@ internal class JsonConfiguration
 
 	/// <summary>
 	/// A string representing how the browser must be sorted.
-    /// Its value should be one of the possible value of 'aqt.browsers.DataModel.activeCols'
-    /// (or equivalently of 'activeCols'
-    /// but not any of ('question', 'answer', 'template', 'deck', 'note', 'noteTags')
+	/// Its value should be one of the possible value of 'aqt.browsers.DataModel.activeCols'
+	/// (or equivalently of 'activeCols'
+	/// but not any of ('question', 'answer', 'template', 'deck', 'note', 'noteTags')
 	/// </summary>
 	[JsonPropertyName("sortType")]
-	public string SortType { get; set; }
+	public string SortType { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Id (as string) of the last note type (a.k.a. model) used
@@ -110,7 +110,7 @@ internal class JsonConfiguration
 	/// The list containing the current deck id and its descendent (as ints)
 	/// </summary>
 	[JsonPropertyName("activeDecks")]
-	public int[] ActiveDecks { get; set; }
+	public int[] ActiveDecks { get; set; } = [];
 
 	/// <summary>
 	/// TODO Not written by the AnkiFileWriter
@@ -155,5 +155,5 @@ internal class JsonConfiguration
 	/// It's added when the browser is open.
 	/// </summary>
 	[JsonPropertyName("activeCols")]
-	public string[] ActiveColumns { get; set; }
+	public string[] ActiveColumns { get; set; } = [];
 }

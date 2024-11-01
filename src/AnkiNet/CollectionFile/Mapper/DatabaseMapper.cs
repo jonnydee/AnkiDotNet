@@ -1,5 +1,6 @@
 ﻿using AnkiNet.CollectionFile.Database.Model;
 using AnkiNet.CollectionFile.Model;
+using System.Collections.Immutable;
 
 namespace AnkiNet.CollectionFile.Mapper;
 
@@ -43,11 +44,12 @@ internal sealed class DatabaseMapper
     {
         var collection = CollectionMapper.FromDb(db.col);
 
-        collection.Cards = db.cards.Select(CardMapper.FromDb).ToArray();
-        collection.Graves = db.graves.Select(GraveMapper.FromDb).ToArray();
-        collection.Notes = db.notes.Select(NoteMapper.FromDb).ToArray();
-        collection.RevLogs = db.revLogs.Select(RevisionLogMapper.FromDb).ToArray();
-
-        return collection;
+        return collection with
+        {
+            Cards = db.cards.Select(CardMapper.FromDb).ToImmutableArray(),
+            Graves = db.graves.Select(GraveMapper.FromDb).ToImmutableArray(),
+            Notes = db.notes.Select(NoteMapper.FromDb).ToImmutableArray(),
+            RevLogs = db.revLogs.Select(RevisionLogMapper.FromDb).ToImmutableArray()
+        };
     }
 }

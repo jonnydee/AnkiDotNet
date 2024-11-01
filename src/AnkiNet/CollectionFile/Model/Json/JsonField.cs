@@ -8,7 +8,7 @@ internal class JsonField
     /// Field name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string FieldName { get; set; }
+    public string FieldName { get; set; } = string.Empty;
 
     /// <summary>
     /// Ordinal of the field - goes from 0 to num fields -1.
@@ -32,7 +32,7 @@ internal class JsonField
     /// DisplayFont
     /// </summary>
     [JsonPropertyName("font")]
-    public string Font { get; set; }
+    public string Font { get; set; } = string.Empty;
 
     /// <summary>
     /// Font size
@@ -44,7 +44,7 @@ internal class JsonField
     /// Undocumented
     /// </summary>
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
     /// <summary>
     /// Array of media. appears to be unused.

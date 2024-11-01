@@ -14,7 +14,7 @@ internal class JsonNewCardsConfiguration
 	/// The list of successive delay between the learning steps of the new cards, as explained in the manual.
 	/// </summary>
 	[JsonPropertyName("delays")]
-	public float[] Delays { get; set; }
+	public float[] Delays { get; set; } = [];
 
 	/// <summary>
 	/// The initial ease factor.
@@ -24,11 +24,11 @@ internal class JsonNewCardsConfiguration
 
 	/// <summary>
 	/// The list of delays according to the button pressed while leaving the learning mode.
-    /// Good, easy and unused.
-    /// In the GUI, the first two elements corresponds to Graduating Interval and Easy interval.
+	/// Good, easy and unused.
+	/// In the GUI, the first two elements corresponds to Graduating Interval and Easy interval.
 	/// </summary>
 	[JsonPropertyName("ints")]
-	public int[] IntDelays { get; set; }
+	public int[] IntDelays { get; set; } = [];
 
 	/// <summary>
 	/// In which order new cards must be shown. NEW_CARDS_RANDOM = 0 and NEW_CARDS_DUE = 1.
