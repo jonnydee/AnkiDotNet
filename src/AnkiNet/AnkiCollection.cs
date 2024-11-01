@@ -100,11 +100,7 @@ public class AnkiCollection
     /// <returns>The id of the added note type.</returns>
     public long CreateNoteType(AnkiNoteType noteType)
     {
-        var newId = IdFactory.Create();
-        while (_noteTypes.ContainsKey(newId))
-        {
-            newId++;
-        }
+        var newId = IdFactory.Create(idExists: _noteTypes.ContainsKey);
 
         noteType.Id = newId;
         AddNoteType(noteType);
@@ -120,12 +116,7 @@ public class AnkiCollection
     /// <returns>The id of the created deck.</returns>
     public long CreateDeck(string name)
     {
-        var newId = IdFactory.Create();
-        while (_decks.ContainsKey(newId))
-        {
-            newId++;
-        }
-
+        var newId = IdFactory.Create(idExists: _decks.ContainsKey);
         AddDeck(newId, name);
         return newId;
     }
@@ -154,11 +145,7 @@ public class AnkiCollection
             throw new ArgumentException($"Cannot create a note with more fields ({fields.Length}) than the note type ({existingNoteType.FieldNames.Length})");
         }
 
-        var newNoteId = IdFactory.Create();
-        while (_notes.ContainsKey(newNoteId))
-        {
-            newNoteId++;
-        }
+        var newNoteId = IdFactory.Create(idExists: _notes.ContainsKey);
 
         // Create the single note
         var note = new AnkiNote(newNoteId, existingNoteType.Id, fields);
@@ -167,11 +154,7 @@ public class AnkiCollection
         // Create at least one card type
         foreach (var cardType in existingNoteType.CardTypes)
         {
-            var newCardId = IdFactory.Create();
-            while (_cards.ContainsKey(newCardId))
-            {
-                newCardId++;
-            }
+            var newCardId = IdFactory.Create(idExists: _cards.ContainsKey);
 
             var newCard = new AnkiCard(newCardId, note, cardType.Ordinal);
             _cards.Add(newCardId, newCard);
