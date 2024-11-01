@@ -33,13 +33,14 @@ public class AnkiFileWriterTests
     color: red;
     background-color: blue;
 }";
-        var newNoteType = new AnkiNoteType(
-            "Basic (With hints)", cardTypes, new[] { "Front", "Back", "Help" }, css
-         );
 
         // Create with a custom note type
         var collection = new AnkiCollection();
-        var noteTypeId = collection.CreateNoteType(newNoteType);
+        var noteTypeId = collection.CreateNoteType(
+            name: "Basic (With hints)",
+            cardTypes: cardTypes,
+            fieldNames: ["Front", "Back", "Help"],
+            css: css);
 
         //
         // 1. Create everything through the AnkiCollection

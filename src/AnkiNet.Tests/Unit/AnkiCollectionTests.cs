@@ -20,17 +20,29 @@ public class AnkiCollectionTests
     [Fact]
     public void New_AnkiNoteType_Without_CardType_Added_To_Collection_Throws()
     {
-        var createNoteType = () => _ = new AnkiNoteType("NT", Array.Empty<AnkiCardType>(), new[] {"A", "B" }, "Css");
+        var createNoteType = () => _ = new AnkiNoteType(
+            id: 1,
+            name: "NT",
+            cardTypes: [],
+            fieldNames: ["A", "B"],
+            css: "Css");
+
         createNoteType.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
     public void New_AnkiNoteType_With_CardType_Added_To_Collection_Is_OK()
     {
-        var noteType = new AnkiNoteType("NT", new[] { new AnkiCardType("Name", 0, "Q", "A") }, new[] { "A", "B" }, "Css");
-
         var collection = new AnkiCollection();
-        var createAnkiCollection = () => collection.CreateNoteType(noteType);
+
+        var createAnkiCollection = () => collection.CreateNoteType(
+            name: "NT",
+            cardTypes: [
+                new AnkiCardType(Name: "Name", Ordinal: 0, QuestionFormat: "Q", AnswerFormat: "A")
+            ],
+            fieldNames: ["A", "B"],
+            css: "Css");
+
         createAnkiCollection.Should().NotThrow();
     }
 
@@ -98,15 +110,25 @@ public class AnkiCollectionTests
     {
         const long cardTypeOrdinal1 = 23;
         const long cardTypeOrdinal2 = 55;
-        var cardTypes = new[]
-        {
-            new AnkiCardType("CT1", cardTypeOrdinal1, "Q1", "A1"),
-            new AnkiCardType("CT2", cardTypeOrdinal2, "Q2", "A2")
-        };
-        var noteType = new AnkiNoteType("NT", cardTypes, new[] {"A", "B", "C"}, "");
     
         var collection = new AnkiCollection();
-        var noteTypeId = collection.CreateNoteType(noteType);
+
+        var noteTypeId = collection.CreateNoteType(
+            name: "NT",
+            cardTypes: [
+                new AnkiCardType(
+                    Name: "CT1",
+                    Ordinal: cardTypeOrdinal1,
+                    QuestionFormat: "Q1",
+                    AnswerFormat: "A1"),
+                new AnkiCardType(
+                    Name: "CT2",
+                    Ordinal: cardTypeOrdinal2,
+                    QuestionFormat: "Q2",
+                    AnswerFormat: "A2"),
+            ],
+            fieldNames: ["A", "B", "C"],
+            css: "css");
 
         var defaultDeck = collection.DefaultDeck;
         defaultDeck.Cards.Should().BeEmpty();
@@ -129,18 +151,26 @@ public class AnkiCollectionTests
     [Fact]
     public void CheckAllFeatures()
     {
-        // Card types
-        var ct1 = new AnkiCardType("ID to EN", 0, "{{ID}} ", "{{ID}}<hr id=\"answer\">{{EN}}");
-        var ct2 = new AnkiCardType("EN to ID", 1, "{{EN}}", "{{EN}}<hr id=\"answer\">{{ID}}");
-
-        // Create a note type with 2 models. This will create 2 cards for each new note
-        var noteType = new AnkiNoteType("Back and forth", new[] { ct1, ct2 }, new[] { "ID", "EN" }, "css");
-
         // Create a collection
         var collection = new AnkiCollection();
 
-        // Add the note type to the collection
-        var noteTypeId = collection.CreateNoteType(noteType);
+        // Create and add a note type with 2 models. This will create 2 cards for each new note
+        var noteTypeId = collection.CreateNoteType(
+            name: "Back and forth",
+            cardTypes: [
+                new AnkiCardType(
+                    Name: "ID to EN",
+                    Ordinal: 0,
+                    QuestionFormat: "{{ID}} ",
+                    AnswerFormat: """{{ID}}<hr id="answer">{{EN}}"""),
+                new AnkiCardType(
+                    Name: "EN to ID",
+                    Ordinal: 1,
+                    QuestionFormat: "{{EN}}",
+                    AnswerFormat: """{{EN}}<hr id="answer">{{ID}}"""),
+            ],
+            fieldNames: ["ID", "EN"],
+            css: "css");
 
         // Create a deck
         var deckId = collection.CreateDeck("Indonesian vocabulary");
@@ -168,15 +198,10 @@ public class AnkiCollectionTests
         var fields = new[] { "F1", "F2" };
         var css = "";
 
-        var nt1 = new AnkiNoteType("A", cardTypes, fields, css);
-        var nt2 = new AnkiNoteType("B", cardTypes, fields, css);
-        var nt3 = new AnkiNoteType("C", cardTypes, fields, css);
-        var nt4 = new AnkiNoteType("D", cardTypes, fields, css);
-
         var col = new AnkiCollection();
-        col.CreateNoteType(nt1);
-        col.CreateNoteType(nt2);
-        col.CreateNoteType(nt3);
-        col.CreateNoteType(nt4);
+        col.CreateNoteType(name: "A", cardTypes, fields, css);
+        col.CreateNoteType(name: "B", cardTypes, fields, css);
+        col.CreateNoteType(name: "C", cardTypes, fields, css);
+        col.CreateNoteType(name: "D", cardTypes, fields, css);
     }
 }

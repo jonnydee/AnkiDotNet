@@ -94,15 +94,17 @@ public class AnkiCollection
     }
 
     /// <summary>
-    /// Create and add a new <see cref="AnkiNoteType"/> to this collection, given the input note type.
+    /// Create and add a new <see cref="AnkiNoteType"/> to this collection.
     /// </summary>
-    /// <param name="noteType">Note type to add to the collection.</param>
-    /// <returns>The id of the added note type.</returns>
-    public long CreateNoteType(AnkiNoteType noteType)
+    /// <param name="name">Name of the note type.</param>
+    /// <param name="cardTypes">Card types (templates) of the note type.</param>
+    /// <param name="fieldNames">Field names of the note type, used in the <see cref="AnkiCardType"/> templates.</param>
+    /// <param name="css">CSS to apply on the <see cref="AnkiCardType"/> templates</param>
+    public long CreateNoteType(string name, AnkiCardType[] cardTypes, string[] fieldNames, string? css = null)
     {
         var newId = IdFactory.Create(idExists: _noteTypes.ContainsKey);
 
-        noteType.Id = newId;
+        var noteType = new AnkiNoteType(newId, name, cardTypes, fieldNames, css);
         AddNoteType(noteType);
 
         return newId;
