@@ -21,27 +21,33 @@ internal abstract class SqliteRepository<T>
 
     public async Task<List<T>> ReadAll()
     {
-        var result = new List<T>();
-
-        var readAllSqlQuery = $"SELECT {string.Join(",", Columns)} FROM {TableName}";
+        var items = new List<T>();
 
         try
         {
-            await using var command = new SqliteCommand(readAllSqlQuery, _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                var item = Map(reader);
-                result.Add(item);
-            }
+            await foreach (var item in ReadAllAsync())
+                items.Add(item);
         }
         catch (Exception e)
         {
             throw new IOException($"Cannot ReadAll {typeof(T).Name}", e);
         }
 
-        return result;
+        return items;
+    }
+
+    public async IAsyncEnumerable<T> ReadAllAsync()
+    {
+        var readAllSqlQuery = $"SELECT {string.Join(",", Columns)} FROM {TableName}";
+
+        await using var command = new SqliteCommand(readAllSqlQuery, _connection);
+        await using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            var item = Map(reader);
+            yield return item;
+        }
     }
 
     public async Task Add(IReadOnlyList<T> items)
