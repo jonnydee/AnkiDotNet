@@ -87,7 +87,7 @@ internal class JsonDeck
     /// Or absent if the deck is dynamic (aka. filtered).
     /// </summary>
     [JsonPropertyName("conf")]
-    public long ConfigurationGroupId { get; set; }
+    public long? ConfigurationGroupId { get; set; }
 
     /// <summary>
     /// Extended new card limit (for custom study).
