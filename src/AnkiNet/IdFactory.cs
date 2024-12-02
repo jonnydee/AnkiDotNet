@@ -13,4 +13,16 @@ internal static class IdFactory
 
         return id;
     }
+
+    public static async Task<long> CreateAsync(Func<long, Task<bool>> idExists)
+    {
+        var id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        while (await idExists(id).ConfigureAwait(false))
+        {
+            ++id;
+        }
+
+        return id;
+    }
 }
