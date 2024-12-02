@@ -1,9 +1,11 @@
-﻿namespace AnkiNet.CollectionFile.Database.Model;
+﻿using System.Collections.Immutable;
+
+namespace AnkiNet.CollectionFile.Database.Model;
 
 internal record DatabaseExtract(
     col col,
-    List<card> cards,
-    List<grave> graves,
-    List<note> notes,
-    List<revLog> revLogs
+    ImmutableArray<card> cards,
+    ImmutableArray<grave> graves,
+    ImmutableArray<note> notes,
+    ImmutableArray<revLog> revLogs
 );

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Data.Sqlite;
 using AnkiNet.CollectionFile.Database.Model;
+using System.Collections.Immutable;
 
 namespace AnkiNet.CollectionFile.Database;
 
@@ -23,7 +24,12 @@ internal sealed class DatabaseReader
         var notes = await new NoteRepository(conn).ReadAll();
         var revLogs = await new RevLogRepository(conn).ReadAll();
 
-        return new DatabaseExtract(col, cards, graves, notes, revLogs);
+        return new(
+            col,
+            cards.ToImmutableArray(),
+            graves.ToImmutableArray(),
+            notes.ToImmutableArray(),
+            revLogs.ToImmutableArray());
     }
 
     public async Task CreateAndPopulateDatabaseTables(string dbFile, DatabaseExtract dbExtract)

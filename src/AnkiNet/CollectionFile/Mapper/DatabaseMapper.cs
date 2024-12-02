@@ -13,10 +13,10 @@ internal sealed class DatabaseMapper
     public DatabaseExtract ConvertModelsToDb(Collection collection)
     {
         var col = CollectionMapper.ToDb(collection);
-        var cards = collection.Cards.Select(CardMapper.ToDb).ToList();
-        var graves = new List<grave>();
-        var notes = collection.Notes.Select(NoteMapper.ToDb).ToList();
-        var revLogs = new List<revLog>();
+        var cards = collection.Cards.Select(CardMapper.ToDb).ToImmutableArray();
+        var graves = ImmutableArray<grave>.Empty;
+        var notes = collection.Notes.Select(NoteMapper.ToDb).ToImmutableArray();
+        var revLogs = ImmutableArray<revLog>.Empty;
 
         // TODO Add RevLog MetaData
         /*
