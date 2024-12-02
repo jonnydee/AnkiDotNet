@@ -14,8 +14,8 @@ internal sealed class DatabaseReader
     {
         SQLitePCL.Batteries.Init();
 
-        using var conn = new SqliteConnection($"Data Source={dbFile};");
-        conn.Open();
+        await using var conn = new SqliteConnection($"Data Source={dbFile};");
+        await conn.OpenAsync();
 
         var col = (await new ColRepository(conn).ReadAll()).Single();
         var cards = await new CardRepository(conn).ReadAll();
@@ -35,7 +35,7 @@ internal sealed class DatabaseReader
             SQLitePCL.Batteries.Init();
 
             conn = new SqliteConnection($"Data Source={dbFile};");
-            conn.Open();
+            await conn.OpenAsync();
             
             var col = ReadResource("AnkiNet.CollectionFile.Database.Sql.ColTable.sql");
             var notes = ReadResource("AnkiNet.CollectionFile.Database.Sql.NotesTable.sql");
@@ -44,18 +44,18 @@ internal sealed class DatabaseReader
             var graves = ReadResource("AnkiNet.CollectionFile.Database.Sql.GravesTable.sql");
             var indexes = ReadResource("AnkiNet.CollectionFile.Database.Sql.Indexes.sql");
 
-            using var colCommand = new SqliteCommand(col, conn);
-            colCommand.ExecuteNonQuery();
-            using var notesCommand = new SqliteCommand(notes, conn);
-            notesCommand.ExecuteNonQuery();
-            using var cardsCommand = new SqliteCommand(cards, conn);
-            cardsCommand.ExecuteNonQuery();
-            using var revLogsCommand = new SqliteCommand(revLogs, conn);
-            revLogsCommand.ExecuteNonQuery();
-            using var gravesCommand = new SqliteCommand(graves, conn);
-            gravesCommand.ExecuteNonQuery();
-            using var indexesCommand = new SqliteCommand(indexes, conn);
-            indexesCommand.ExecuteNonQuery();
+            await using var colCommand = new SqliteCommand(col, conn);
+            await colCommand.ExecuteNonQueryAsync();
+            await using var notesCommand = new SqliteCommand(notes, conn);
+            await notesCommand.ExecuteNonQueryAsync();
+            await using var cardsCommand = new SqliteCommand(cards, conn);
+            await cardsCommand.ExecuteNonQueryAsync();
+            await using var revLogsCommand = new SqliteCommand(revLogs, conn);
+            await revLogsCommand.ExecuteNonQueryAsync();
+            await using var gravesCommand = new SqliteCommand(graves, conn);
+            await gravesCommand.ExecuteNonQueryAsync();
+            await using var indexesCommand = new SqliteCommand(indexes, conn);
+            await indexesCommand.ExecuteNonQueryAsync();
 
             await new ColRepository(conn).Add(new List<col> { dbExtract.col });
             await new NoteRepository(conn).Add(dbExtract.notes);
