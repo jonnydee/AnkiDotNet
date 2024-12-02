@@ -10,34 +10,34 @@ internal static class NoteMapper
     public static Note FromDb(note note)
     {
         return new Note(
-            note.id,
-            note.guid,
-            note.mid,
-            note.mod,
-            note.usn,
-            note.tags,
-            note.flds.Split(FieldSeparator),
-            note.sfld,
-            note.csum,
-            note.flags,
-            note.data
+            Id: note.id,
+            Guid: note.guid,
+            ModelId: note.mid,
+            ModificationDateTime: note.mod,
+            UpdateSequenceNumber: note.usn,
+            Tags: note.tags,
+            Fields: note.flds.Split(FieldSeparator),
+            SortField: note.sfld,
+            FieldChecksum: note.csum,
+            Flags: note.flags,
+            Data: note.data
         );
     }
 
     public static note ToDb(Note note)
     {
         return new note(
-            note.Id,
-            note.Guid,
-            note.ModelId,
-            note.ModificationDateTime,
-            note.UpdateSequenceNumber,
-            note.Tags,
-            string.Join(FieldSeparator, note.Fields),
-            note.SortField,
-            note.FieldChecksum,
-            note.Flags,
-            note.Data
+            id: note.Id,
+            guid: note.Guid,
+            mid: note.ModelId,
+            mod: note.ModificationDateTime,
+            usn: note.UpdateSequenceNumber,
+            tags: note.Tags,
+            flds: string.Join(FieldSeparator, note.Fields),
+            sfld: note.SortField,
+            csum: note.FieldChecksum,
+            flags: note.Flags,
+            data: note.Data
         );
     }
 }
