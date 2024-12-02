@@ -35,22 +35,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\CardsTable.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\CardsTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\ColTable.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\ColTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\GravesTable.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\GravesTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\Indexes.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\Indexes.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\NotesTable.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\NotesTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="CollectionFile\Database\Sql\RevLogTable.sql">
+    <EmbeddedResource Include="Infrastructure\Persistence\AnkiFile\Database\Sql\RevLogTable.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -66,11 +66,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="CollectionFile\Database\Sql\CardsTable.sql" />
-    <None Remove="CollectionFile\Database\Sql\ColTable.sql" />
-    <None Remove="CollectionFile\Database\Sql\GravesTable.sql" />
-    <None Remove="CollectionFile\Database\Sql\Indexes.sql" />
-    <None Remove="CollectionFile\Database\Sql\NotesTable.sql" />
-    <None Remove="CollectionFile\Database\Sql\RevLogTable.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\CardsTable.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\ColTable.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\GravesTable.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\Indexes.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\NotesTable.sql" />
+    <None Remove="Infrastructure\Persistence\AnkiFile\Database\Sql\RevLogTable.sql" />
   </ItemGroup>
 </Project>

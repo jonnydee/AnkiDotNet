@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using AnkiNet.CollectionFile.Database.Model;
 using AnkiNet.CollectionFile.Model;
-using AnkiNet.CollectionFile.Model.Json;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Json;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 
 namespace AnkiNet.CollectionFile.Mapper;
 

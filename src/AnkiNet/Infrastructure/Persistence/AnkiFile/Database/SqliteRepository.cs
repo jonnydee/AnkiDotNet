@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace AnkiNet.CollectionFile.Database;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
 
 internal abstract class SqliteRepository<T>
 {

@@ -1,5 +1,5 @@
 ﻿using AnkiNet.CollectionFile.Model;
-using AnkiNet.CollectionFile.Model.Json;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Json;
 using System.Collections.Immutable;
 
 namespace AnkiNet.CollectionFile;

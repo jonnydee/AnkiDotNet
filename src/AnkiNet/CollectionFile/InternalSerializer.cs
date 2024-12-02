@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
-using AnkiNet.CollectionFile.Database;
 using AnkiNet.CollectionFile.Mapper;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
 using ZstdSharp;
 
 namespace AnkiNet.CollectionFile;

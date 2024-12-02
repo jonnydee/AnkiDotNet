@@ -1,4 +1,4 @@
-﻿namespace AnkiNet.CollectionFile.Database.Model;
+﻿namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 
 internal record revLog(
     long id,

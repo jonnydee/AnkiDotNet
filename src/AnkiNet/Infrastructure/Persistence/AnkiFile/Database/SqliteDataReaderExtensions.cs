@@ -1,7 +1,6 @@
-﻿using AnkiNet.CollectionFile.Database.Model;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 
-namespace AnkiNet.CollectionFile.Database;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
 
 internal static class SqliteDataReaderExtensions
 {
@@ -22,7 +21,7 @@ internal static class SqliteDataReaderExtensions
         }
     }
 
-    public static T? GetNullable<T>(this SqliteDataReader reader, string columnName) where T:class
+    public static T? GetNullable<T>(this SqliteDataReader reader, string columnName) where T : class
     {
         try
         {

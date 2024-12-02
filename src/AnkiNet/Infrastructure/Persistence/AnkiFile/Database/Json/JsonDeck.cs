@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace AnkiNet.CollectionFile.Model.Json;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Json;
 
 internal class JsonDeck
 {

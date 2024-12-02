@@ -1,6 +1,5 @@
-﻿using AnkiNet.CollectionFile.Database.Model;
-
-using AnkiNet.DomainModel;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 
 namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Mappers;
 

@@ -1,7 +1,7 @@
-﻿using AnkiNet.CollectionFile.Database.Model;
+﻿using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 using Microsoft.Data.Sqlite;
 
-namespace AnkiNet.CollectionFile.Database;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
 
 internal class CardRepository : SqliteRepository<card>
 {

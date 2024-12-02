@@ -1,4 +1,4 @@
-﻿namespace AnkiNet;
+﻿namespace AnkiNet.DomainModel;
 
 internal static class IdFactory
 {

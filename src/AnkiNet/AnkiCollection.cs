@@ -1,8 +1,9 @@
-﻿using System.Collections.Immutable;
+﻿using AnkiNet.DomainModel;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("AnkiNet.Tests")]
+[assembly: InternalsVisibleTo("AnkiNet.Tests")]
 
 namespace AnkiNet;
 

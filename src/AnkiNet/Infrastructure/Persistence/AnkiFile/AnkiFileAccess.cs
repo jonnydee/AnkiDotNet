@@ -1,8 +1,8 @@
-﻿using AnkiNet.CollectionFile.Database;
-using AnkiNet.CollectionFile.Database.Model;
-using AnkiNet.DomainModel;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 using AnkiNet.Infrastructure.Persistence.AnkiFile.Mappers;
-using AnkiNet.MediaFile;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.MediaFile;
 using System.Collections.Immutable;
 using System.IO.Compression;
 using ZstdSharp;
@@ -64,25 +64,25 @@ internal sealed class AnkiFileAccess
 
     public async Task SaveAsync(Stream ankiFileStream)
     {
-        string? collectionFilePath = null, mediaFilePath = null;
+        string? ankiFilePath = null, mediaFilePath = null;
         try
         {
             var dbExtract = await LoadDatabaseExtractAsync().ConfigureAwait(false);
 
-            collectionFilePath = Path.GetTempFileName();
-            await _dbReader.CreateAndPopulateDatabaseTables(collectionFilePath, dbExtract).ConfigureAwait(false);
+            ankiFilePath = Path.GetTempFileName();
+            await _dbReader.CreateAndPopulateDatabaseTables(ankiFilePath, dbExtract).ConfigureAwait(false);
 
             mediaFilePath = Path.GetTempFileName();
             await MediaFileHandler.WriteMediaFile(mediaFilePath, null!);
 
             using var archive = new ZipArchive(ankiFileStream, ZipArchiveMode.Create, true);
-            archive.CreateEntryFromFile(collectionFilePath, "collection.anki21");
+            archive.CreateEntryFromFile(ankiFilePath, "collection.anki21");
             archive.CreateEntryFromFile(mediaFilePath, "media");
         }
         finally
         {
-            if (collectionFilePath is not null)
-                File.Delete(collectionFilePath);
+            if (ankiFilePath is not null)
+                File.Delete(ankiFilePath);
 
             if (mediaFilePath is not null)
                 File.Delete(mediaFilePath);

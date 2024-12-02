@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 using AnkiNet.CollectionFile;
-using AnkiNet.MediaFile;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.MediaFile;
 
 namespace AnkiNet;
 

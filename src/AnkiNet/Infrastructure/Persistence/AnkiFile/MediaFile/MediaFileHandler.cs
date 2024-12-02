@@ -1,4 +1,4 @@
-﻿namespace AnkiNet.MediaFile;
+﻿namespace AnkiNet.Infrastructure.Persistence.AnkiFile.MediaFile;
 
 internal static class MediaFileHandler
 {
@@ -7,8 +7,8 @@ internal static class MediaFileHandler
     /// </summary>
     /// <param name="mediaFilePath">File to write media to.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous write operation.</returns>
-    public static async Task WriteMediaFile(string mediaFilePath, AnkiCollection _)
-	{
+    public static async Task WriteMediaFile(string mediaFilePath, object collection)
+    {
         await using var writer = new StreamWriter(
             stream: File.OpenWrite(mediaFilePath),
             leaveOpen: false);

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace AnkiNet.CollectionFile.Database.Model;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 
 internal record DatabaseExtract(
     col col,

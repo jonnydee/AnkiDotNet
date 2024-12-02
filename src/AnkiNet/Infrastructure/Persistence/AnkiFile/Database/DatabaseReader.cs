@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using Microsoft.Data.Sqlite;
-using AnkiNet.CollectionFile.Database.Model;
 using System.Collections.Immutable;
+using AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Model;
 
-namespace AnkiNet.CollectionFile.Database;
+namespace AnkiNet.Infrastructure.Persistence.AnkiFile.Database;
 
 internal sealed class DatabaseReader
 {
@@ -42,13 +42,13 @@ internal sealed class DatabaseReader
 
             conn = new SqliteConnection($"Data Source={dbFile};");
             await conn.OpenAsync();
-            
-            var col = ReadResource("AnkiNet.CollectionFile.Database.Sql.ColTable.sql");
-            var notes = ReadResource("AnkiNet.CollectionFile.Database.Sql.NotesTable.sql");
-            var cards = ReadResource("AnkiNet.CollectionFile.Database.Sql.CardsTable.sql");
-            var revLogs = ReadResource("AnkiNet.CollectionFile.Database.Sql.RevLogTable.sql");
-            var graves = ReadResource("AnkiNet.CollectionFile.Database.Sql.GravesTable.sql");
-            var indexes = ReadResource("AnkiNet.CollectionFile.Database.Sql.Indexes.sql");
+
+            var col = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.ColTable.sql");
+            var notes = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.NotesTable.sql");
+            var cards = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.CardsTable.sql");
+            var revLogs = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.RevLogTable.sql");
+            var graves = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.GravesTable.sql");
+            var indexes = ReadResource("AnkiNet.Infrastructure.Persistence.AnkiFile.Database.Sql.Indexes.sql");
 
             await using var colCommand = new SqliteCommand(col, conn);
             await colCommand.ExecuteNonQueryAsync();
