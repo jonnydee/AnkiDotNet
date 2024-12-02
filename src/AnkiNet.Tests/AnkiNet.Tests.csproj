@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>AnkiNet.Tests</AssemblyName>
     <RootNamespace>AnkiNet.Tests</RootNamespace>
@@ -10,6 +10,14 @@
 
     <IsPackable>false</IsPackable>
     <ReleaseVersion>1</ReleaseVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;AsyncFixer01</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;AsyncFixer01</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
