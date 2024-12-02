@@ -1,0 +1,8 @@
+﻿namespace AnkiNet.DomainModel;
+
+public enum GraveType
+{
+    Card = 0,
+    Note = 1,
+    Deck = 2
+}
