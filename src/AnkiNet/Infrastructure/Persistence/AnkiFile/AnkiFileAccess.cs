@@ -9,7 +9,7 @@ using ZstdSharp;
 
 namespace AnkiNet.Infrastructure.Persistence.AnkiFile;
 
-internal sealed class AnkiFileAccess
+public sealed class AnkiFileAccess
 {
     private readonly DatabaseReader _dbReader = new();
     private readonly IDeckRepository _deckRepository;

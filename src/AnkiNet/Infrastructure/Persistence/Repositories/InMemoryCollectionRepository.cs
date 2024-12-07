@@ -2,7 +2,7 @@
 
 namespace AnkiNet.Infrastructure.Persistence.Repositories;
 
-internal sealed class InMemoryCollectionRepository
+public sealed class InMemoryCollectionRepository
     : ICollectionRepository
 {
     private readonly Dictionary<CollectionId, Collection> _collections = [];

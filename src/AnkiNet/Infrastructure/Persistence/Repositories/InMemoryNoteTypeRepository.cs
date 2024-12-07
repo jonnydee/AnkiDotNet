@@ -2,7 +2,7 @@
 
 namespace AnkiNet.Infrastructure.Persistence.Repositories;
 
-internal sealed class InMemoryNoteTypeRepository
+public sealed class InMemoryNoteTypeRepository
     : INoteTypeRepository
 {
     private readonly Dictionary<NoteTypeId, NoteType> _noteTypes = [];

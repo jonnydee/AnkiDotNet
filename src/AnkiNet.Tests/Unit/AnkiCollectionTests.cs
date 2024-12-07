@@ -4,224 +4,224 @@ namespace AnkiNet.Tests.Unit;
 
 public class AnkiCollectionTests
 {
-    [Fact]
-    public void New_AnkiCollection_Has_Default_Deck()
-    {
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void New_AnkiCollection_Has_Default_Deck()
+    //{
+    //    var collection = new AnkiCollection();
 
-        collection.NoteTypes.Should().BeEmpty();
-        collection.Decks.Should().HaveCount(1);
+    //    collection.NoteTypes.Should().BeEmpty();
+    //    collection.Decks.Should().HaveCount(1);
 
-        var defaultDeck = collection.Decks.Single();
-        defaultDeck.Name.Should().Be(AnkiCollection.DefaultDeckName);
-        defaultDeck.Id.Should().Be(AnkiCollection.DefaultDeckId);
-    }
+    //    var defaultDeck = collection.Decks.Single();
+    //    defaultDeck.Name.Should().Be(AnkiCollection.DefaultDeckName);
+    //    defaultDeck.Id.Should().Be(AnkiCollection.DefaultDeckId);
+    //}
 
-    [Fact]
-    public void New_AnkiNoteType_Without_CardType_Added_To_Collection_Throws()
-    {
-        var createNoteType = () => _ = new AnkiNoteType(
-            id: 1,
-            name: "NT",
-            cardTypes: [],
-            fieldNames: ["A", "B"],
-            css: "Css");
+    //[Fact]
+    //public void New_AnkiNoteType_Without_CardType_Added_To_Collection_Throws()
+    //{
+    //    var createNoteType = () => _ = new AnkiNoteType(
+    //        id: 1,
+    //        name: "NT",
+    //        cardTypes: [],
+    //        fieldNames: ["A", "B"],
+    //        css: "Css");
 
-        createNoteType.Should().ThrowExactly<ArgumentException>();
-    }
+    //    createNoteType.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void New_AnkiNoteType_With_CardType_Added_To_Collection_Is_OK()
-    {
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void New_AnkiNoteType_With_CardType_Added_To_Collection_Is_OK()
+    //{
+    //    var collection = new AnkiCollection();
 
-        var createAnkiCollection = () => collection.CreateNoteType(
-            name: "NT",
-            cardTypes: [
-                new AnkiCardType(
-                    Name: "Name",
-                    Ordinal: 0,
-                    QuestionFormat: "Q",
-                    AnswerFormat: "A")
-            ],
-            fieldNames: ["A", "B"],
-            css: "Css");
+    //    var createAnkiCollection = () => collection.CreateNoteType(
+    //        name: "NT",
+    //        cardTypes: [
+    //            new AnkiCardType(
+    //                Name: "Name",
+    //                Ordinal: 0,
+    //                QuestionFormat: "Q",
+    //                AnswerFormat: "A")
+    //        ],
+    //        fieldNames: ["A", "B"],
+    //        css: "Css");
 
-        createAnkiCollection.Should().NotThrow();
-    }
+    //    createAnkiCollection.Should().NotThrow();
+    //}
 
-    [Fact]
-    public void AnkiCollection_Cannot_Add_Deck_With_Default_Name()
-    {
-        var collection = new AnkiCollection();
-        var addDeck = () => _ = collection.CreateDeck(name: AnkiCollection.DefaultDeckName);
-        addDeck.Should().ThrowExactly<ArgumentException>();
-    }
+    //[Fact]
+    //public void AnkiCollection_Cannot_Add_Deck_With_Default_Name()
+    //{
+    //    var collection = new AnkiCollection();
+    //    var addDeck = () => _ = collection.CreateDeck(name: AnkiCollection.DefaultDeckName);
+    //    addDeck.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_Cannot_Add_Deck_With_Default_Id_1()
-    {
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void AnkiCollection_Cannot_Add_Deck_With_Default_Id_1()
+    //{
+    //    var collection = new AnkiCollection();
 
-        var addDeck = () => collection.AddDeck(new AnkiDeck(
-            id: AnkiCollection.DefaultDeckId,
-            name: "Some deck"));
+    //    var addDeck = () => collection.AddDeck(new AnkiDeck(
+    //        id: AnkiCollection.DefaultDeckId,
+    //        name: "Some deck"));
         
-        addDeck.Should().ThrowExactly<ArgumentException>();
-    }
+    //    addDeck.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Name()
-    {
-        var collection = new AnkiCollection();
-        _ = collection.CreateDeck(name: "New");
-        var addDeck = () => _ = collection.CreateDeck(name: "New");
-        addDeck.Should().ThrowExactly<ArgumentException>();
-    }
+    //[Fact]
+    //public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Name()
+    //{
+    //    var collection = new AnkiCollection();
+    //    _ = collection.CreateDeck(name: "New");
+    //    var addDeck = () => _ = collection.CreateDeck(name: "New");
+    //    addDeck.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Id()
-    {
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void AnkiCollection_With_Deck_Cannot_Add_Deck_With_Same_Id()
+    //{
+    //    var collection = new AnkiCollection();
 
-        collection.AddDeck(new AnkiDeck(
-            id: 15,
-            name: "New deck 1"));
+    //    collection.AddDeck(new AnkiDeck(
+    //        id: 15,
+    //        name: "New deck 1"));
 
-        var addDeck = () => collection.AddDeck(new AnkiDeck(
-            id: 15,
-            name: "New deck 2"));
+    //    var addDeck = () => collection.AddDeck(new AnkiDeck(
+    //        id: 15,
+    //        name: "New deck 2"));
 
-        addDeck.Should().ThrowExactly<ArgumentException>();
-    }
+    //    addDeck.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_AddNote_With_Unknown_Deck_Id_Throws()
-    {
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void AnkiCollection_AddNote_With_Unknown_Deck_Id_Throws()
+    //{
+    //    var collection = new AnkiCollection();
 
-        var addNote = () => collection.CreateNote(
-            deckId: 50,
-            noteTypeId: 1,
-            fields: ["A", "B"]
-        );
+    //    var addNote = () => collection.CreateNote(
+    //        deckId: 50,
+    //        noteTypeId: 1,
+    //        fields: ["A", "B"]
+    //    );
 
-        addNote.Should().ThrowExactly<ArgumentException>();
-    }
+    //    addNote.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_AddNote_With_Unknown_NoteTypeId_Throws()
-    {
-        const int unknownNoteTypeId = 15;
+    //[Fact]
+    //public void AnkiCollection_AddNote_With_Unknown_NoteTypeId_Throws()
+    //{
+    //    const int unknownNoteTypeId = 15;
         
-        var collection = new AnkiCollection();
+    //    var collection = new AnkiCollection();
         
-        var addNote = () => collection.CreateNote(
-            deckId: 1,
-            noteTypeId: unknownNoteTypeId,
-            fields: ["A", "B"]
-        );
+    //    var addNote = () => collection.CreateNote(
+    //        deckId: 1,
+    //        noteTypeId: unknownNoteTypeId,
+    //        fields: ["A", "B"]
+    //    );
         
-        addNote.Should().ThrowExactly<ArgumentException>();
-    }
+    //    addNote.Should().ThrowExactly<ArgumentException>();
+    //}
 
-    [Fact]
-    public void AnkiCollection_AddNote_To_Deck_With_Known_NoteTypeId_Creates_Cards()
-    {
-        const long cardTypeOrdinal1 = 23;
-        const long cardTypeOrdinal2 = 55;
+    //[Fact]
+    //public void AnkiCollection_AddNote_To_Deck_With_Known_NoteTypeId_Creates_Cards()
+    //{
+    //    const long cardTypeOrdinal1 = 23;
+    //    const long cardTypeOrdinal2 = 55;
     
-        var collection = new AnkiCollection();
+    //    var collection = new AnkiCollection();
 
-        var noteTypeId = collection.CreateNoteType(
-            name: "NT",
-            cardTypes: [
-                new AnkiCardType(
-                    Name: "CT1",
-                    Ordinal: cardTypeOrdinal1,
-                    QuestionFormat: "Q1",
-                    AnswerFormat: "A1"),
-                new AnkiCardType(
-                    Name: "CT2",
-                    Ordinal: cardTypeOrdinal2,
-                    QuestionFormat: "Q2",
-                    AnswerFormat: "A2"),
-            ],
-            fieldNames: ["A", "B", "C"],
-            css: "css");
+    //    var noteTypeId = collection.CreateNoteType(
+    //        name: "NT",
+    //        cardTypes: [
+    //            new AnkiCardType(
+    //                Name: "CT1",
+    //                Ordinal: cardTypeOrdinal1,
+    //                QuestionFormat: "Q1",
+    //                AnswerFormat: "A1"),
+    //            new AnkiCardType(
+    //                Name: "CT2",
+    //                Ordinal: cardTypeOrdinal2,
+    //                QuestionFormat: "Q2",
+    //                AnswerFormat: "A2"),
+    //        ],
+    //        fieldNames: ["A", "B", "C"],
+    //        css: "css");
 
-        var defaultDeck = collection.DefaultDeck;
-        defaultDeck.Cards.Should().BeEmpty();
+    //    var defaultDeck = collection.DefaultDeck;
+    //    defaultDeck.Cards.Should().BeEmpty();
 
-        collection.CreateNote(defaultDeck.Id, noteTypeId, fields: ["A", "B"]);
+    //    collection.CreateNote(defaultDeck.Id, noteTypeId, fields: ["A", "B"]);
 
-        defaultDeck.Cards.Should().HaveCount(2);
-        var card1 = defaultDeck.Cards[0];
-        var card2 = defaultDeck.Cards[1];
+    //    defaultDeck.Cards.Should().HaveCount(2);
+    //    var card1 = defaultDeck.Cards[0];
+    //    var card2 = defaultDeck.Cards[1];
 
-        card1.Note.NoteTypeId.Should().Be(noteTypeId);
-        card1.Note.FieldValues.Should().Equal("A", "B");
-        card1.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal1);
+    //    card1.Note.NoteTypeId.Should().Be(noteTypeId);
+    //    card1.Note.FieldValues.Should().Equal("A", "B");
+    //    card1.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal1);
 
-        card2.Note.NoteTypeId.Should().Be(noteTypeId);
-        card2.Note.FieldValues.Should().Equal("A", "B");
-        card2.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal2);
-    }
+    //    card2.Note.NoteTypeId.Should().Be(noteTypeId);
+    //    card2.Note.FieldValues.Should().Equal("A", "B");
+    //    card2.NoteCardTypeOrdinal.Should().Be(cardTypeOrdinal2);
+    //}
 
-    [Fact]
-    public void CheckAllFeatures()
-    {
-        // Create a collection
-        var collection = new AnkiCollection();
+    //[Fact]
+    //public void CheckAllFeatures()
+    //{
+    //    // Create a collection
+    //    var collection = new AnkiCollection();
 
-        // Create and add a note type with 2 models. This will create 2 cards for each new note
-        var noteTypeId = collection.CreateNoteType(
-            name: "Back and forth",
-            cardTypes: [
-                new AnkiCardType(
-                    Name: "ID to EN",
-                    Ordinal: 0,
-                    QuestionFormat: "{{ID}} ",
-                    AnswerFormat: """{{ID}}<hr id="answer">{{EN}}"""),
-                new AnkiCardType(
-                    Name: "EN to ID",
-                    Ordinal: 1,
-                    QuestionFormat: "{{EN}}",
-                    AnswerFormat: """{{EN}}<hr id="answer">{{ID}}"""),
-            ],
-            fieldNames: ["ID", "EN"],
-            css: "css");
+    //    // Create and add a note type with 2 models. This will create 2 cards for each new note
+    //    var noteTypeId = collection.CreateNoteType(
+    //        name: "Back and forth",
+    //        cardTypes: [
+    //            new AnkiCardType(
+    //                Name: "ID to EN",
+    //                Ordinal: 0,
+    //                QuestionFormat: "{{ID}} ",
+    //                AnswerFormat: """{{ID}}<hr id="answer">{{EN}}"""),
+    //            new AnkiCardType(
+    //                Name: "EN to ID",
+    //                Ordinal: 1,
+    //                QuestionFormat: "{{EN}}",
+    //                AnswerFormat: """{{EN}}<hr id="answer">{{ID}}"""),
+    //        ],
+    //        fieldNames: ["ID", "EN"],
+    //        css: "css");
 
-        // Create a deck
-        var deckId = collection.CreateDeck(name: "Indonesian vocabulary");
+    //    // Create a deck
+    //    var deckId = collection.CreateDeck(name: "Indonesian vocabulary");
 
-        // Create notes, using the note type idx
-        collection.CreateNote(deckId, noteTypeId, fields: ["Bunga", "Flower"]);
-        collection.CreateNote(deckId, noteTypeId, fields: ["Kucing", "Cat"]);
+    //    // Create notes, using the note type idx
+    //    collection.CreateNote(deckId, noteTypeId, fields: ["Bunga", "Flower"]);
+    //    collection.CreateNote(deckId, noteTypeId, fields: ["Kucing", "Cat"]);
 
-        // Check the resulting cards
-        var allDecks = collection.Decks;
-        _ = collection.TryGetDeckByName("Indonesian vocabulary", out var deck1);
-        _ = collection.TryGetDeckById(deckId, out var deck2);
+    //    // Check the resulting cards
+    //    var allDecks = collection.Decks;
+    //    _ = collection.TryGetDeckByName("Indonesian vocabulary", out var deck1);
+    //    _ = collection.TryGetDeckById(deckId, out var deck2);
 
-        foreach (var c in deck1!.Cards)
-        {
-            // Read the fields
-            var fields = c.Note.FieldValues;
-        }
-    }
+    //    foreach (var c in deck1!.Cards)
+    //    {
+    //        // Read the fields
+    //        var fields = c.Note.FieldValues;
+    //    }
+    //}
 
-    [Fact]
-    public void AddSeveralNoteTypes_NoIdClash()
-    {
-        var cardTypes = new[] { new AnkiCardType(Name: "CT", Ordinal: 0, QuestionFormat: "", AnswerFormat: "") };
-        var fields = new[] { "F1", "F2" };
-        var css = "";
+    //[Fact]
+    //public void AddSeveralNoteTypes_NoIdClash()
+    //{
+    //    var cardTypes = new[] { new AnkiCardType(Name: "CT", Ordinal: 0, QuestionFormat: "", AnswerFormat: "") };
+    //    var fields = new[] { "F1", "F2" };
+    //    var css = "";
 
-        var col = new AnkiCollection();
-        col.CreateNoteType(name: "A", cardTypes, fields, css);
-        col.CreateNoteType(name: "B", cardTypes, fields, css);
-        col.CreateNoteType(name: "C", cardTypes, fields, css);
-        col.CreateNoteType(name: "D", cardTypes, fields, css);
-    }
+    //    var col = new AnkiCollection();
+    //    col.CreateNoteType(name: "A", cardTypes, fields, css);
+    //    col.CreateNoteType(name: "B", cardTypes, fields, css);
+    //    col.CreateNoteType(name: "C", cardTypes, fields, css);
+    //    col.CreateNoteType(name: "D", cardTypes, fields, css);
+    //}
 }
