@@ -51,8 +51,8 @@ public sealed class AnkiFileAccess
         }
         finally
         {
-            if (dbFile is not null)
-                File.Delete(dbFile);
+            //if (dbFile is not null)
+            //    File.Delete(dbFile);
         }
     }
 
