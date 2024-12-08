@@ -74,7 +74,11 @@ internal sealed class SqliteDeckRepository
         var decks = _colRepositoryDb.ReadAllAsync()
             .Select(CollectionMapper.DecksFromDb)
             .SelectMany(decks => decks.ToAsyncEnumerable())
-            .Select(deck => deck.AddCards(cardsGroupedByDeckId[deck.Id]));
+            .Select(deck =>
+            {
+                deck.AddCards(cardsGroupedByDeckId[deck.Id]);
+                return deck;
+            });
 
         await foreach (var deck in decks.ConfigureAwait(false))
             yield return deck;

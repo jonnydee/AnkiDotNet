@@ -37,9 +37,6 @@ public sealed class CardTemplate
     public CardTemplate(string name)
         : base(id: name)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        Name = name;
     }
 
     internal CardTemplate Clone()
@@ -57,7 +54,7 @@ public sealed class CardTemplate
     /// <summary>
     /// Name of the card template.
     /// </summary>
-    public string Name { get; set; }
+    public string Name => Id;
 
     /// <summary>
     /// Deck override (null by default)

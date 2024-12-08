@@ -14,7 +14,7 @@ public sealed class Card
         Relearning = 3
     }
 
-    public Card(long id, NoteId noteId, string cardTemplateId, IEnumerable<RevisionLog> revisionLogs)
+    internal Card(long id, NoteId noteId, string cardTemplateId, IEnumerable<RevisionLog> revisionLogs)
         : base(id)
     {
         ArgumentException.ThrowIfNullOrEmpty(cardTemplateId);

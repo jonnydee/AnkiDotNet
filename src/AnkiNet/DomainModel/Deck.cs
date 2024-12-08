@@ -71,25 +71,25 @@ public sealed class Deck
     /// </summary>
     public DeckConfiguration DeckConfiguration { get => field; set => SetPropertyValue(ref field, value); }
 
-    public Deck AddCards(IEnumerable<Card> cards)
+    public void AddCards(IEnumerable<Card> cards)
     {
         ArgumentNullException.ThrowIfNull(cards);
 
         foreach (var card in cards)
             AddCard(card);
-
-        return this;
     }
 
-    public Card AddCard(Card card)
+    public void AddCard(Card card)
     {
         ArgumentNullException.ThrowIfNull(card);
 
         ThrowIfCardWithIdAlreadyExists(card);
 
+        //if (!noteType.CardTemplates.Any(cardTemplate => cardTemplate.Id == cardTemplateId))
+        //    throw new ArgumentException(message: "'CardTemplate' not found in 'NoteType'");
+
         Cards = Cards.Add(card);
         IsDirty = true;
-        return card;
     }
 
     public Card? GetCard(long cardId)
@@ -125,19 +125,20 @@ public sealed class Deck
         if (note.NoteTypeId != noteType.Id)
             throw new ArgumentException(message: "'Note' and 'NoteType' not related");
 
-        foreach (var template in noteType.CardTemplates)
+        foreach (var cardTemplate in noteType.CardTemplates)
         {
-            var id = IdFactory.Create(idExists: id => Cards.Any(card => card.Id == id));
-            var card = new Card(
-                id: id,
-                noteId: note.Id,
-                cardTemplateId: template.Id,
-                revisionLogs: []);
-
-            Cards = Cards.Add(card);
+            var card = CreateCard(note.Id, cardTemplate.Id);
+            AddCard(card);
         }
+    }
 
-        IsDirty = true;
+    public Card CreateCard(NoteId noteId, string cardTemplateId, IEnumerable<RevisionLog>? revisionLogs = null)
+    {
+        ArgumentNullException.ThrowIfNull(noteId);
+        ArgumentNullException.ThrowIfNullOrEmpty(cardTemplateId);
+
+        var id = IdFactory.Create(idExists: id => Cards.Any(card => card.Id == id));
+        return new(id, noteId, cardTemplateId, revisionLogs ?? []);
     }
 
     private void ThrowIfCardWithIdAlreadyExists(Card card)
