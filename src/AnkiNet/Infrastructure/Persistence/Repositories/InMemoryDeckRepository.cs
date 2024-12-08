@@ -9,6 +9,13 @@ public sealed class InMemoryDeckRepository
 
     public ValueTask AddAsync(Deck deck)
     {
+        if (_decks.ContainsKey(deck.Id))
+            throw new InvalidOperationException($"Deck with ID {deck.Id} already exists.");
+
+        if (deck.IsDirty is false)
+            throw new InvalidOperationException("Deck is not dirty.");
+
+        deck.IsDirty = false;
         deck = deck.Clone();
         _decks.Add(deck.Id, deck);
         return ValueTask.CompletedTask;

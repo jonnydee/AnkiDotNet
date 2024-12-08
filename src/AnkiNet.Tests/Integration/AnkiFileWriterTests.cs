@@ -1,57 +1,94 @@
-﻿namespace AnkiNet.Tests.Integration;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure;
+
+namespace AnkiNet.Tests.Integration;
 
 public class AnkiFileWriterTests
 {
-    private readonly string _folder = "db_files";
-    private readonly string _fileName = "Output.apkg";
+    private static readonly ICollectionServiceFactory CollectionServiceFactory = new InMemoryCollectionServiceFactory();
 
-//    [Fact]
-//    public async Task WhenWrite_ThenNoExceptionIsThrown()
-//    {
-//        var cardTypes = new[]
-//            {
-//                new AnkiCardType
-//                (
-//                    "Forward",
-//                    0,
-//                    "{{Front}}<br/>{{hint:Help}}",
-//                    "{{Front}}<hr id=\"answer\">{{Back}}"
-//                ),
-//                new AnkiCardType
-//                (
-//                    "Backward",
-//                    1,
-//                    "{{Back}}<br/>{{hint:Help}}",
-//                    "{{Back}}<hr id=\"answer\">{{Front}}"
-//                )
-//            };
+    private const string OutputFolder = "db_files";
+    private const string AnkiFileName = "Output.apkg";
 
-//        var css = @".card {
-//    font-family: arial;
-//    font-size: 20px;
-//    text-align: center;
-//    color: red;
-//    background-color: blue;
-//}";
+    [Fact]
+    public async Task WhenWrite_ThenNoExceptionIsThrown()
+    {
+        await using var collectionService = await CollectionServiceFactory.CreateCollectionServiceAsync();
 
-//        // Create with a custom note type
-//        var collection = new AnkiCollection();
-//        var noteTypeId = collection.CreateNoteType(
-//            name: "Basic (With hints)",
-//            cardTypes: cardTypes,
-//            fieldNames: ["Front", "Back", "Help"],
-//            css: css);
+        //
+        // 1. Create everything through the service.
+        //
 
-//        //
-//        // 1. Create everything through the AnkiCollection
-//        //
-//        var deckId = collection.CreateDeck("C# Test");
-//        collection.CreateNote(deckId, noteTypeId, "Bonjour", "Hello", "B... H...");
-//        collection.CreateNote(deckId, noteTypeId, "Salut", "Hi", "S... Hi...");
+        var collection = await collectionService.CreateCollectionAsync();
 
-//        //
-//        // 2. Write to file
-//        //
-//        await AnkiFileWriter.WriteToFileAsync(_folder, _fileName, collection);
-//    }
+        var deck = await collectionService.CreateDeckAsync(collection.Id, "C# Test");
+
+        var noteType = await collectionService.CreateNoteTypeAsync(
+            collectionId: collection.Id,
+            name: "Basic (With hints)",
+            fields:
+            [
+                Field.Create("Front"),
+                Field.Create("Back"),
+                Field.Create("Help"),
+            ],
+            cardTemplates:
+            [
+                CardTemplate.Create(
+                    name: "Forward",
+                    questionFormat: "{{Front}}<br/>{{hint:Help}}",
+                    answerFormat: "{{Front}}<hr id=\"answer\">{{Back}}"
+                ),
+                CardTemplate.Create(
+                    name: "Backward",
+                    questionFormat: "{{Back}}<br/>{{hint:Help}}",
+                    answerFormat: "{{Back}}<hr id=\"answer\">{{Front}}"
+                )
+            ]);
+        noteType.Styling =
+            """
+            .card {font-family: arial;
+                font-size: 20px;
+                text-align: center;
+                color: red;
+                background-color: blue;
+            }
+            """;
+
+        {
+            var note = await collectionService.CreateNoteAsync(
+                collectionId: collection.Id,
+                noteTypeId: noteType.Id,
+                fieldValues: new Dictionary<string, string>()
+                {
+                    ["Front"] = "Bonjour",
+                    ["Back"] = "Hello",
+                    ["Help"] = "B... H...",
+                },
+                tags: []);
+
+            deck.AddCardsForNote(note, noteType);
+        }
+
+        {
+            var note = await collectionService.CreateNoteAsync(
+                collectionId: collection.Id,
+                noteTypeId: noteType.Id,
+                fieldValues: new Dictionary<string, string>()
+                {
+                    ["Front"] = "Salut",
+                    ["Back"] = "Hi",
+                    ["Help"] = "S... Hi...",
+                },
+                tags: []);
+            deck.AddCardsForNote(note, noteType);
+        }
+
+        //
+        // 2. Write to file
+        //
+
+        var outputFilePath = Path.Combine(OutputFolder, AnkiFileName);
+        await collectionService.SaveAnkiFileAsync(outputFilePath);
+    }
 }

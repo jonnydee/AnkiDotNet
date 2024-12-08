@@ -111,7 +111,11 @@ public sealed class AnkiFileAccess
             })
             .ToArray();
         foreach (var note in notes)
+        {
             await _noteRepository.AddAsync(note).ConfigureAwait(false);
+            
+            collection.AddNote(note);
+        }
 
         // Add decks and together with their cards.
         {
@@ -143,13 +147,13 @@ public sealed class AnkiFileAccess
             foreach (var deck in CollectionMapper.DecksFromDb(dbExtract.col))
             {
                 // Add cards to deck.
+                if (getCardsByDeckId.TryGetValue(deck.Id, out var cards))
                 {
-                    var cards = getCardsByDeckId[deck.Id].ToArray();
                     foreach (var card in cards)
                     {
                         // Add revision logs to card.
+                        if (getRevLogsByCardId.TryGetValue(card.Id, out var revLogs))
                         {
-                            var revLogs = getRevLogsByCardId[card.Id].ToArray();
                             foreach (var revLog in revLogs)
                                 card.AddRevisionLog(revLog);
                         }

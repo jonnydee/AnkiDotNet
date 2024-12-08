@@ -57,12 +57,12 @@ public sealed class Note
     internal Note Clone()
         => new(Id, NoteTypeId, FieldValues, Tags)
         {
-            IsDirty = IsDirty,
             Guid = Guid,
             ModificationDateTime = ModificationDateTime,
             UpdateSequenceNumber = UpdateSequenceNumber,
             FieldChecksum = FieldChecksum,
             SortField = SortField,
+            IsDirty = IsDirty,
         };
 
     public bool IsDirty { get; set; }

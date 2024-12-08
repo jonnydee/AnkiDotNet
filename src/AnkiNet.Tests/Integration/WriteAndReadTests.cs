@@ -1,64 +1,112 @@
-﻿using FluentAssertions;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure;
+using FluentAssertions;
 
 namespace AnkiNet.Tests.Integration;
 
 public class WriteAndReadTests
 {
-//    [Fact]
-//    public async Task WhenWriteThenRead_ThenCollectionsAreIdentical()
-//    {
-//        var expectedCollection = CreateCollection();
+    private static readonly ICollectionServiceFactory CollectionServiceFactory = new InMemoryCollectionServiceFactory();
 
-//        using var stream = new MemoryStream();
-//        await AnkiFileWriter.WriteToStreamAsync(stream, expectedCollection);
+    [Fact]
+    public async Task WhenWriteThenRead_ThenCollectionsAreIdentical()
+    {
+        await using var collectionService1 = await CollectionServiceFactory.CreateCollectionServiceAsync();
+        await using var collectionService2 = await CollectionServiceFactory.CreateCollectionServiceAsync();
+        {
+            await using var stream = new MemoryStream();
 
-//        var actualCollection = await AnkiFileReader.ReadFromStreamAsync(stream);
+            await InitCollectionServiceAsync(collectionService1);
+            await collectionService1.CommitAsync();
+            await collectionService1.SaveAnkiFileAsync(stream);
 
-//        actualCollection.Should().BeEquivalentTo(expectedCollection);
-//    }
+            stream.Position = 0;
 
-//    private static AnkiCollection CreateCollection()
-//    {
-//        var cardTypes = new[]
-//            {
-//                new AnkiCardType
-//                (
-//                    "Forward",
-//                    0,
-//                    "{{Front}}<br/>{{hint:Help}}",
-//                    "{{Front}}<hr id=\"answer\">{{Back}}"
-//                ),
-//                new AnkiCardType
-//                (
-//                    "Backward",
-//                    1,
-//                    "{{Back}}<br/>{{hint:Help}}",
-//                    "{{Back}}<hr id=\"answer\">{{Front}}"
-//                )
-//            };
+            await collectionService2.LoadAnkiFileAsync(stream);
+        }
 
-//        var css = @".card {
-//    font-family: arial;
-//    font-size: 20px;
-//    text-align: center;
-//    color: red;
-//    background-color: blue;
-//}";
-//        // Create with a custom note type
-//        var collection = new AnkiCollection();
-//        var noteTypeId = collection.CreateNoteType(
-//            name: "Basic (With hints)",
-//            cardTypes: cardTypes,
-//            fieldNames: ["Front", "Back", "Help"],
-//            css);
+        var expectedCollections = await collectionService1.GetCollectionsAsync().ToArrayAsync();
+        var actualCollections = await collectionService2.GetCollectionsAsync().ToArrayAsync();
+        actualCollections.Should().BeEquivalentTo(expectedCollections);
 
-//        //
-//        // 1. Create everything through the AnkiCollection
-//        //
-//        var deckId = collection.CreateDeck("C# Test");
-//        collection.CreateNote(deckId, noteTypeId, "Bonjour", "Hello", "B... H...");
-//        collection.CreateNote(deckId, noteTypeId, "Salut", "Hi", "S... Hi...");
+        var expectedDecks = await collectionService1.GetDecksAsync().ToArrayAsync();
+        var actualDecks = await collectionService2.GetDecksAsync().ToArrayAsync();
+        actualDecks.Should().BeEquivalentTo(expectedDecks);
 
-//        return collection;
-//    }
+        var expectedNotes = await collectionService1.GetNotesAsync().ToArrayAsync();
+        var actualNotes = await collectionService2.GetNotesAsync().ToArrayAsync();
+        actualNotes.Should().BeEquivalentTo(expectedNotes);
+
+        var expectedNoteTypes = await collectionService1.GetNoteTypesAsync().ToArrayAsync();
+        var actualNoteTypes = await collectionService2.GetNoteTypesAsync().ToArrayAsync();
+        actualNoteTypes.Should().BeEquivalentTo(expectedNoteTypes);
+    }
+
+    private static async Task InitCollectionServiceAsync(ICollectionService collectionService)
+    {
+        var collection = await collectionService.CreateCollectionAsync();
+
+        var deck = await collectionService.CreateDeckAsync(collection.Id, "C# Test");
+
+        var noteType = await collectionService.CreateNoteTypeAsync(
+            collectionId: collection.Id,
+            name: "Basic (With hints)",
+            fields:
+            [
+                Field.Create("Front"),
+                Field.Create("Back"),
+                Field.Create("Help"),
+            ],
+            cardTemplates:
+            [
+                CardTemplate.Create(
+                    name: "Forward",
+                    questionFormat: "{{Front}}<br/>{{hint:Help}}",
+                    answerFormat: "{{Front}}<hr id=\"answer\">{{Back}}"
+                ),
+                CardTemplate.Create(
+                    name: "Backward",
+                    questionFormat: "{{Back}}<br/>{{hint:Help}}",
+                    answerFormat: "{{Back}}<hr id=\"answer\">{{Front}}"
+                )
+            ]);
+        noteType.Styling =
+            """
+            .card {font-family: arial;
+                font-size: 20px;
+                text-align: center;
+                color: red;
+                background-color: blue;
+            }
+            """;
+
+        {
+            var note = await collectionService.CreateNoteAsync(
+                collectionId: collection.Id,
+                noteTypeId: noteType.Id,
+                fieldValues: new Dictionary<string, string>()
+                {
+                    ["Front"] = "Bonjour",
+                    ["Back"] = "Hello",
+                    ["Help"] = "B... H...",
+                },
+                tags: []);
+
+            deck.AddCardsForNote(note, noteType);
+        }
+
+        {
+            var note = await collectionService.CreateNoteAsync(
+                collectionId: collection.Id,
+                noteTypeId: noteType.Id,
+                fieldValues: new Dictionary<string, string>()
+                {
+                    ["Front"] = "Salut",
+                    ["Back"] = "Hi",
+                    ["Help"] = "S... Hi...",
+                },
+                tags: []);
+            deck.AddCardsForNote(note, noteType);
+        }
+    }
 }

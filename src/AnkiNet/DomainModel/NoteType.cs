@@ -12,6 +12,8 @@ namespace AnkiNet.DomainModel;
 public sealed class NoteType
     : AggregateRoot<NoteTypeId>
 {
+    private string _styling = string.Empty;
+
     public static NoteType Create(
         NoteTypeId id,
         string name,
@@ -64,6 +66,7 @@ public sealed class NoteType
             LatexSvg = LatexSvg,
             BrowserSortField = BrowserSortField,
             LastAddedNoteTags = LastAddedNoteTags,
+            IsDirty = IsDirty,
         };
     }
 
@@ -136,7 +139,19 @@ public sealed class NoteType
     /// <summary>
     /// CSS, shared for all templates.
     /// </summary>
-    public string Styling { get; set; } = string.Empty;
+    public string Styling
+    {
+        get => _styling;
+
+        set
+        {
+            if (value == _styling)
+                return;
+
+            _styling = value;
+            IsDirty = true;
+        }
+    }
 
     /// <summary>
     /// Modification time in seconds.

@@ -29,8 +29,8 @@ internal static class CollectionMapper
             graves: []
         )
         {
+            IsDirty = true,// col.dty == 1,
             CreationDateTime = col.crt,
-            IsDirty = col.dty == 1,
             LastModifiedDateTime = col.mod,
             LastSyncDateTime = col.ls,
             SchemaModificationDateTime = col.scm,
@@ -51,13 +51,14 @@ internal static class CollectionMapper
         var jsonDecks = JsonSerializer.Deserialize<Dictionary<long, JsonDeck>>(col.decks, SerializerOptions)!;
         var jsonDeckConfigurations = JsonSerializer.Deserialize<Dictionary<long, JsonDeckConfguration>>(col.dconf, SerializerOptions)!;
 
-        return jsonDecks.Values
-            .Join(
-                inner: jsonDeckConfigurations.Values,
-                outerKeySelector: jsonDeck => jsonDeck.Id,
-                innerKeySelector: jsonDeckConfiguration => jsonDeckConfiguration.Id,
-                resultSelector: FromJson)
-            .ToImmutableArray();
+        foreach (var jsonDeck in jsonDecks.Values)
+        {
+            var jsonDeckConfiguration = jsonDeckConfigurations.TryGetValue(jsonDeck.Id, out var value)
+                ? value
+                : null;
+
+            yield return FromJson(jsonDeck, jsonDeckConfiguration);
+        }
     }
 
     private static Configuration FromJson(JsonConfiguration jsonConfiguration)
@@ -86,14 +87,19 @@ internal static class CollectionMapper
             TimeLimit = jsonConfiguration.TimeLimit,
         };
 
-    private static Deck FromJson(JsonDeck jsonDeck, JsonDeckConfguration jsonDeckConfiguration)
+    private static Deck FromJson(JsonDeck jsonDeck, JsonDeckConfguration? jsonDeckConfiguration)
     {
+        var deckConfiguration = jsonDeckConfiguration is { }
+            ? FromJson(jsonDeckConfiguration)
+            : DeckConfigurations.Default;
+
         return new(
             id: new DeckId(jsonDeck.Id),
             name: jsonDeck.Name,
-            deckConfiguration: FromJson(jsonDeckConfiguration),
+            deckConfiguration: deckConfiguration,
             cards: [])
         {
+            IsDirty = true,
             LastModificationTime = jsonDeck.LastModificationTime,
             UpdateSequenceNumber = jsonDeck.UpdateSequenceNumber,
             NewToday = (jsonDeck.NewToday[0], jsonDeck.NewToday[1]),
@@ -181,6 +187,7 @@ internal static class CollectionMapper
                 .OrderBy(entry => entry.Ordinal)
                 .Select(entry => entry.CardTemplate))
         {
+            IsDirty = true,
             ModificationTime = model.ModificationTime,
             LatexPre = model.LatexPre,
             LatexPost = model.LatexPost,
@@ -191,7 +198,7 @@ internal static class CollectionMapper
                 : DeckId.Empty,
             ModelType = (ModelType)model.ModelType,
             UpdateSequenceNumber = model.UpdateSequenceNumber,
-            LastAddedNoteTags = Tags.FromStrings(model.LastAddedNoteTags).ToImmutableArray(),
+            LastAddedNoteTags = Tags.FromStrings(model.LastAddedNoteTags ?? []).ToImmutableArray(),
             Styling = model.Css,
         };
 

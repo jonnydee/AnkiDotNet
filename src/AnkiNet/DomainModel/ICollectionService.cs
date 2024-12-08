@@ -19,13 +19,27 @@ public interface ICollectionService
     Task<NoteType> CreateNoteTypeAsync(
         CollectionId collectionId, string name, IEnumerable<Field> fields, IEnumerable<CardTemplate> cardTemplates);
     
+    Task<Collection?> GetCollectionByIdAsync(CollectionId collectionId);
+
+    IAsyncEnumerable<Collection> GetCollectionsAsync();
+
+    Task<Deck?> GetDeckByIdAsync(DeckId deckId);
+
     IAsyncEnumerable<Deck> GetDecksAsync();
-    
+
+    Task<Note?> GetNoteByIdAsync(NoteId noteId);
+
     IAsyncEnumerable<Note> GetNotesAsync();
-    
+
+    Task<NoteType?> GetNoteTypeByIdAsync(NoteTypeId noteTypeId);
+
     IAsyncEnumerable<NoteType> GetNoteTypesAsync();
-    
+
+    Task LoadAnkiFileAsync(Stream ankiFileStream);
+
     Task LoadAnkiFileAsync(string ankiFile);
     
+    Task SaveAnkiFileAsync(Stream ankiFileStream);
+
     Task SaveAnkiFileAsync(string ankiFile);
 }

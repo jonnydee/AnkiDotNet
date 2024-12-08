@@ -9,6 +9,13 @@ public sealed class InMemoryCollectionRepository
 
     public ValueTask AddAsync(Collection collection)
     {
+        if (_collections.ContainsKey(collection.Id))
+            throw new InvalidOperationException($"Collection with ID {collection.Id} already exists.");
+
+        if (collection.IsDirty is false)
+            throw new InvalidOperationException("Collection is not dirty.");
+
+        collection.IsDirty = false;
         collection = collection.Clone();
         _collections.Add(collection.Id, collection);
         return ValueTask.CompletedTask;

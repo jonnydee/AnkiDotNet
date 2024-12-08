@@ -1,13 +1,19 @@
-﻿using FluentAssertions;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure;
+using FluentAssertions;
 
 namespace AnkiNet.Tests.Unit;
 
 public class AnkiFileReaderTests
 {
-    //[Fact]
-    //public async Task WhenRead_ThenNoExceptionIsThrown()
-    //{
-    //    var action = async () => _ = await AnkiFileReader.ReadFromFileAsync("unknown");
-    //    await action.Should().ThrowExactlyAsync<FileNotFoundException>();
-    //}
+    private static readonly ICollectionServiceFactory CollectionServiceFactory = new InMemoryCollectionServiceFactory();
+
+    [Fact]
+    public async Task WhenRead_ThenNoExceptionIsThrown()
+    {
+        await using var collectionService = await CollectionServiceFactory.CreateCollectionServiceAsync();
+
+        var action = () => collectionService.LoadAnkiFileAsync("unknown");
+        await action.Should().ThrowExactlyAsync<FileNotFoundException>();
+    }
 }

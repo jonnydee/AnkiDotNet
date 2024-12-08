@@ -49,9 +49,9 @@ public sealed class Collection
         ArgumentNullException.ThrowIfNull(graves);
 
         Configuration = configuration;
-        NoteTypes = noteTypes.ToImmutableHashSet();
-        Decks = decks.ToImmutableHashSet();
-        Notes = notes.ToImmutableHashSet();
+        NoteTypes = noteTypes.ToImmutableSortedSet();
+        Decks = decks.ToImmutableSortedSet();
+        Notes = notes.ToImmutableSortedSet();
         Graves = graves.ToImmutableList();
     }
 
@@ -65,7 +65,7 @@ public sealed class Collection
             UpdateSequenceNumber = UpdateSequenceNumber,
             LastSyncDateTime = LastSyncDateTime,
             Configuration = Configuration,
-            IsDirty = IsDirty
+            IsDirty = IsDirty,
         };
 
     public void AddDeck(Deck deck)

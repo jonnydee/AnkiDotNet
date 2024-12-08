@@ -1,21 +1,29 @@
-﻿using FluentAssertions;
+﻿using AnkiNet.DomainModel;
+using AnkiNet.Infrastructure;
+using FluentAssertions;
 
 namespace AnkiNet.Tests.Unit;
 
 public class AnkiCollectionTests
 {
-    //[Fact]
-    //public void New_AnkiCollection_Has_Default_Deck()
-    //{
-    //    var collection = new AnkiCollection();
+    private static readonly ICollectionServiceFactory CollectionServiceFactory = new InMemoryCollectionServiceFactory();
 
-    //    collection.NoteTypes.Should().BeEmpty();
-    //    collection.Decks.Should().HaveCount(1);
+    [Fact]
+    public async Task New_AnkiCollection_Has_Default_Deck()
+    {
+        await using var collectionService = await CollectionServiceFactory.CreateCollectionServiceAsync();
 
-    //    var defaultDeck = collection.Decks.Single();
-    //    defaultDeck.Name.Should().Be(AnkiCollection.DefaultDeckName);
-    //    defaultDeck.Id.Should().Be(AnkiCollection.DefaultDeckId);
-    //}
+        var collection = await collectionService.CreateCollectionAsync();
+
+        collection.NoteTypes.Should().BeEmpty();
+        collection.Decks.Should().HaveCount(1);
+
+        var deckId = collection.Decks.Single();
+        var deck = await collectionService.GetDeckByIdAsync(deckId);
+        deck.Should().NotBeNull();
+        deck!.Name.Should().Be(DeckConfigurations.DefaultDeckName);
+        deck.Id.Should().Be(Configurations.DefaultDeckId);
+    }
 
     //[Fact]
     //public void New_AnkiNoteType_Without_CardType_Added_To_Collection_Throws()
@@ -66,7 +74,7 @@ public class AnkiCollectionTests
     //    var addDeck = () => collection.AddDeck(new AnkiDeck(
     //        id: AnkiCollection.DefaultDeckId,
     //        name: "Some deck"));
-        
+
     //    addDeck.Should().ThrowExactly<ArgumentException>();
     //}
 
@@ -113,15 +121,15 @@ public class AnkiCollectionTests
     //public void AnkiCollection_AddNote_With_Unknown_NoteTypeId_Throws()
     //{
     //    const int unknownNoteTypeId = 15;
-        
+
     //    var collection = new AnkiCollection();
-        
+
     //    var addNote = () => collection.CreateNote(
     //        deckId: 1,
     //        noteTypeId: unknownNoteTypeId,
     //        fields: ["A", "B"]
     //    );
-        
+
     //    addNote.Should().ThrowExactly<ArgumentException>();
     //}
 
@@ -130,7 +138,7 @@ public class AnkiCollectionTests
     //{
     //    const long cardTypeOrdinal1 = 23;
     //    const long cardTypeOrdinal2 = 55;
-    
+
     //    var collection = new AnkiCollection();
 
     //    var noteTypeId = collection.CreateNoteType(

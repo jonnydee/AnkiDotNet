@@ -54,6 +54,17 @@ internal sealed class CollectionService
         await UnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
+    public async Task LoadAnkiFileAsync(Stream ankiFileStream)
+    {
+        var ankiFileAccess = new AnkiFileAccess(
+            DeckRepository,
+            NoteRepository,
+            NoteTypeRepository,
+            CollectionRepository);
+
+        await ankiFileAccess.LoadAsync(ankiFileStream).ConfigureAwait(false);
+    }
+
     public async Task LoadAnkiFileAsync(string ankiFile)
     {
         var ankiFileAccess = new AnkiFileAccess(
@@ -63,6 +74,17 @@ internal sealed class CollectionService
             CollectionRepository);
 
         await ankiFileAccess.LoadAsync(ankiFile).ConfigureAwait(false);
+    }
+
+    public async Task SaveAnkiFileAsync(Stream ankiFileStream)
+    {
+        var ankiFileAccess = new AnkiFileAccess(
+            DeckRepository,
+            NoteRepository,
+            NoteTypeRepository,
+            CollectionRepository);
+
+        await ankiFileAccess.SaveAsync(ankiFileStream).ConfigureAwait(false);
     }
 
     public async Task SaveAnkiFileAsync(string ankiFile)
@@ -149,6 +171,18 @@ internal sealed class CollectionService
         return new(idValue);
     }
 
+    public async Task<Deck?> GetDeckByIdAsync(DeckId deckId)
+    {
+        if (UnitOfWork.TryGetEntity(deckId, out Deck? deck))
+            return deck;
+
+        deck = await DeckRepository.GetByIdAsync(deckId).ConfigureAwait(false);
+        if (deck is not null)
+            UnitOfWork.Register(deck);
+
+        return deck;
+    }
+
     public async Task<Note> CreateNoteAsync(
         CollectionId collectionId,
         NoteTypeId noteTypeId,
@@ -162,7 +196,7 @@ internal sealed class CollectionService
             ?? throw new ArgumentException("The collection does not exist", nameof(collectionId));
 
         var noteType = await GetNoteTypeByIdAsync(noteTypeId).ConfigureAwait(false)
-            ?? throw new ArgumentException("The note type does not exist", nameof(noteTypeId));
+            ?? throw new ArgumentException("The deck type does not exist", nameof(noteTypeId));
 
         var id = await NewNoteIdAsync().ConfigureAwait(false);
         var note = Note.Create(id, noteType, fieldValues, tags);
@@ -182,6 +216,18 @@ internal sealed class CollectionService
             .ConfigureAwait(false);
 
         return new(idValue);
+    }
+
+    public async Task<Note?> GetNoteByIdAsync(NoteId noteId)
+    {
+        if (UnitOfWork.TryGetEntity(noteId, out Note? note))
+            return note;
+
+        note = await NoteRepository.GetByIdAsync(noteId).ConfigureAwait(false);
+        if (note is not null)
+            UnitOfWork.Register(note);
+
+        return note;
     }
 
     public async Task<NoteType> CreateNoteTypeAsync(
@@ -227,6 +273,22 @@ internal sealed class CollectionService
             UnitOfWork.Register(noteType);
         
         return noteType;
+    }
+
+    public async IAsyncEnumerable<Collection> GetCollectionsAsync()
+    {
+        await foreach (var collection in CollectionRepository.GetAllAsync().ConfigureAwait(false))
+        {
+            if (UnitOfWork.TryGetEntity(collection.Id, out Collection? registeredCollection))
+            {
+                yield return registeredCollection;
+            }
+            else
+            {
+                UnitOfWork.Register(collection);
+                yield return collection;
+            }
+        }
     }
 
     public async IAsyncEnumerable<Deck> GetDecksAsync()

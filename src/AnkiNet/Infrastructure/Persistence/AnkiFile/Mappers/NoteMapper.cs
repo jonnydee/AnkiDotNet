@@ -24,6 +24,7 @@ internal static class NoteMapper
             tags: tags
         )
         {
+            IsDirty = true,
             FieldChecksum = note.csum,
             Guid = note.guid,
             ModificationDateTime = note.mod,

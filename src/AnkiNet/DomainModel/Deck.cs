@@ -53,7 +53,8 @@ public sealed class Deck
             IsDynamic = IsDynamic,
             ConfigurationGroupId = ConfigurationGroupId,
             ExtendedNewCardLimit = ExtendedNewCardLimit,
-            ExtendedReviewCardLimit = ExtendedReviewCardLimit
+            ExtendedReviewCardLimit = ExtendedReviewCardLimit,
+            IsDirty = IsDirty,
         };
 
     public bool IsDirty { get; set; }
@@ -89,6 +90,19 @@ public sealed class Deck
         Cards = Cards.Add(card);
         IsDirty = true;
         return card;
+    }
+
+    public Card? GetCard(long cardId)
+        => Cards.FirstOrDefault(card => card.Id == cardId);
+
+    public bool RemoveCard(long cardId)
+    {
+        if (GetCard(cardId) is not { } card)
+            return false;
+
+        Cards = Cards.Remove(card);
+        IsDirty = true;
+        return true;
     }
 
     public void AddRevisionLogToCard(Card card, RevisionLog revisionLog)

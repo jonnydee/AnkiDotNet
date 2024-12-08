@@ -7,7 +7,6 @@ namespace AnkiNet.Tests.Integration;
 
 public class AnkiFileReaderTests
 {
-    private readonly string _path = "db_files/Japanese.apkg";
     private readonly IDeckRepository _deckRepository = new InMemoryDeckRepository();
     private readonly INoteRepository _noteRepository = new InMemoryNoteRepository();
     private readonly INoteTypeRepository _noteTypeRepository = new InMemoryNoteTypeRepository();
@@ -27,14 +26,12 @@ public class AnkiFileReaderTests
     [Fact]
     public async Task WhenRead_ThenNoExceptionIsThrown()
     {
-        await _ankiFileAccess.LoadAsync(_path);
+        await _ankiFileAccess.LoadAsync("db_files/Japanese.apkg");
 
         var collection = await _collectionRepository.GetAllAsync().FirstAsync();
 
         var decks = collection.Decks
             .Select(deckId => _deckRepository.GetByIdAsync(deckId).Result)
-            .Where(deck => deck is not null)
-            .Select(deck => (deck!.Id, deck.Name))
             .ToArray();
 
         var expectedDecks = new[]
@@ -47,128 +44,211 @@ public class AnkiFileReaderTests
             (Id: new DeckId(1663496558232), Name: "Japanese::Class")
         };
 
-        collection.Decks.Should().BeEquivalentTo(expectedDecks);
+        decks.Select(deck => (Id: deck!.Id, Name: deck.Name)).Should().BeEquivalentTo(expectedDecks);
 
-//        var css = @".card {
-//    font-family: arial;
-//    font-size: 20px;
-//    text-align: center;
-//    color: black;
-//    background-color: white;
-//}
-//";
-//        var css2 = @".card {
-//font-family: arial;
-//font-size: 20px;
-//text-align: center;
-//color: black;
-//background-color: white;
-//}";
+        var noteTypes = collection.NoteTypes
+            .Select(noteTypeId => _noteTypeRepository.GetByIdAsync(noteTypeId).Result)
+            .Where(noteType => noteType is not null)
+            .ToArray();
 
-//        var css3 = @".card {
-//font-family: arial;
-//font-size: 20px;
-//text-align: center;
-//color: black;
-//background-color: blue;
-//}";
+        {
+            var noteType = await _noteTypeRepository.GetByIdAsync(new NoteTypeId(1663496639418L))!;
+            noteType!.Should().NotBeNull();
+            
+            noteType!.Name.Should().Be("Basic");
+         
+            noteType.Styling.Should().Be((string?)
+                ".card {\n    font-family: arial;\n    font-size: 20px;\n    text-align: center;\n    color: black;\n    background-color: white;\n}\n");
 
-//        var expectedNoteTypes = new[]
-//        {
-//            new AnkiNoteType(1663496639418L, "Basic", new[]
-//                {
-//                    new AnkiCardType("Card 1", 0, "{{Front}}", @"{{FrontSide}}
+            noteType.Fields.Select(field => field.Name).Should().Equal("Front", "Back");
+            
+            noteType.CardTemplates.Should().HaveCount(1);
+            var cardTemplate = noteType.CardTemplates[0];
+            cardTemplate.Name.Should().Be("Card 1");
+            cardTemplate.QuestionFormat.Should().Be("{{Front}}");
+            cardTemplate.AnswerFormat.Should().Be("{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}");
+        }
 
-//<hr id=answer>
+        {
+            var noteType = await _noteTypeRepository.GetByIdAsync(new NoteTypeId(1661780059778L))!;
+            noteType!.Should().NotBeNull();
 
-//{{Back}}")
-//                }, new[] {"Front", "Back"}, css),
-//            new AnkiNoteType(1661780059778L, "Basic-6d0e1", new[]
-//                {
-//                    new AnkiCardType("Forward", 0, @"{{Front}}
-//", @"{{FrontSide}}
-//<hr id=answer />
-//{{Back}}")
-//                }, new[] {"Front", "Back"}, css2),
-//            new AnkiNoteType(1661656212286L, "Basic-64627", new[]
-//                {
-//                    new AnkiCardType("Forward", 0, @"{{Front}}
-//<div style='font-family: ""Ayuthaya""; font-size: 15px;'>{{Help}}</div>
-//", @"{{FrontSide}}
-//<hr id=answer />
-//{{Back}}")
-//                }, new[] {"Front", "Back", "Help"}, css3)
-//        };
+            noteType!.Name.Should().Be("Basic-6d0e1");
 
-//        collection.NoteTypes.Should().BeEquivalentTo(
-//            expectedNoteTypes
-//        );
+            noteType.Styling.Should().Be((string?)
+                ".card {\nfont-family: arial;\nfont-size: 20px;\ntext-align: center;\ncolor: black;\nbackground-color: white;\n}");
 
-//        var noteTypeId = 1661780059778L;
-//        var expectedJapaneseDeckCards = new[]
-//        {
-//            new AnkiCard(1661780059803L, new AnkiNote(1661780059797L, noteTypeId, ["人【ひと】", "person; someone; somebody"]), 0),
-//            new AnkiCard(1661780059806L, new AnkiNote(1661780059804L, noteTypeId, ["男【おとこ】", "man; male"]), 0),
-//            new AnkiCard(1661780059808L, new AnkiNote(1661780059807L, noteTypeId, ["女【おんな】", "female; woman; female sex"]), 0),
-//            new AnkiCard(1661780059810L, new AnkiNote(1661780059809L, noteTypeId, ["子【こ】", "child; kid; teenager; youngster; young (non-adult) person"]), 0),
-//            new AnkiCard(1661780059813L, new AnkiNote(1661780059811L, noteTypeId, ["日【ひ】", "day; days"]), 0),
-//            new AnkiCard(1661780059815L, new AnkiNote(1661780059814L, noteTypeId, ["月【つき】", "Moon"]), 0),
-//            new AnkiCard(1661780059817L, new AnkiNote(1661780059816L, noteTypeId, ["時【とき】", "time; hour; moment"]), 0),
-//            new AnkiCard(1661780059820L, new AnkiNote(1661780059819L, noteTypeId, ["水【みず】", "water (esp. cool, fresh water, e.g. drinking water)"]), 0),
-//            new AnkiCard(1661780059822L, new AnkiNote(1661780059821L, noteTypeId, ["火【ひ】", "fire; flame; blaze"]), 0),
-//            new AnkiCard(1661780059824L, new AnkiNote(1661780059823L, noteTypeId, ["土【つち】", "earth; soil; dirt; clay; mud"]), 0),
-//            new AnkiCard(1661780059825L, new AnkiNote(1661780059825L, noteTypeId, ["風【かぜ】", "wind; breeze; draught; draft"]), 0),
-//            new AnkiCard(1661780059827L, new AnkiNote(1661780059826L, noteTypeId, ["空【そら】", "sky; the air; the heavens"]), 0),
-//            new AnkiCard(1661780059829L, new AnkiNote(1661780059828L, noteTypeId, ["山【やま】", "mountain; hill"]), 0),
-//            new AnkiCard(1661780059831L, new AnkiNote(1661780059830L, noteTypeId, ["川【かわ】", "river; stream"]), 0),
-//            new AnkiCard(1661780059834L, new AnkiNote(1661780059832L, noteTypeId, ["木【き】", "tree; shrub; bush"]), 0),
-//            new AnkiCard(1661780059836L, new AnkiNote(1661780059835L, noteTypeId, ["花【はな】", "flower; blossom; bloom; petal"]), 0),
-//            new AnkiCard(1661780059838L, new AnkiNote(1661780059837L, noteTypeId, ["雨【あめ】", "rain"]), 0),
-//            new AnkiCard(1661780059840L, new AnkiNote(1661780059839L, noteTypeId, ["雪【ゆき】", "snow; snowfall"]), 0),
-//            new AnkiCard(1661780059841L, new AnkiNote(1661780059840L, noteTypeId, ["金【かね】", "money"]), 0),
-//            new AnkiCard(1661780059843L, new AnkiNote(1661780059843L, noteTypeId, ["刀【かたな】", "sword (esp. Japanese single-edged); katana"]), 0),
-//        };
+            noteType.Fields.Select(field => field.Name).Should().Equal("Front", "Back");
 
-//        collection.Decks[1].Cards.Should().BeEquivalentTo(
-//            expectedJapaneseDeckCards
-//        );
+            noteType.CardTemplates.Should().HaveCount(1);
+            var cardTemplate = noteType.CardTemplates[0];
+            cardTemplate.Name.Should().Be("Forward");
+            cardTemplate.QuestionFormat.Should().Be("{{Front}}\n");
+            cardTemplate.AnswerFormat.Should().Be("{{FrontSide}}\n<hr id=answer />\n{{Back}}");
+        }
+
+        {
+            var noteType = await _noteTypeRepository.GetByIdAsync(new NoteTypeId(1661656212286L))!;
+            noteType!.Should().NotBeNull();
+
+            noteType!.Name.Should().Be("Basic-64627");
+
+            noteType.Styling.Should().Be((string?)
+                ".card {\nfont-family: arial;\nfont-size: 20px;\ntext-align: center;\ncolor: black;\nbackground-color: blue;\n}");
+
+            noteType.Fields.Select(field => field.Name).Should().Equal("Front", "Back", "Help");
+
+            noteType.CardTemplates.Should().HaveCount(1);
+            var cardTemplate = noteType.CardTemplates[0];
+            cardTemplate.Name.Should().Be("Forward");
+            cardTemplate.QuestionFormat.Should().Be("{{Front}}\n<div style='font-family: \"Ayuthaya\"; font-size: 15px;'>{{Help}}</div>\n");
+            cardTemplate.AnswerFormat.Should().Be("{{FrontSide}}\n<hr id=answer />\n{{Back}}");
+        }
+
+        {
+            var noteType = await _noteTypeRepository.GetByIdAsync(new NoteTypeId(1661780059778L))!;
+
+            var fieldNames = noteType!.Fields.Select(field => field.Name).ToArray();
+
+            (NoteId NoteId, string[] FieldValues)[] expectedNotes =
+            [
+                (NoteId: new NoteId(1661780059797L), FieldValues: ["人【ひと】", "person; someone; somebody"]),
+                (NoteId: new NoteId(1661780059804L), FieldValues: ["男【おとこ】", "man; male"]),
+                (NoteId: new NoteId(1661780059807L), FieldValues: ["女【おんな】", "female; woman; female sex"]),
+                (NoteId: new NoteId(1661780059809L), FieldValues: ["子【こ】", "child; kid; teenager; youngster; young (non-adult) person"]),
+                (NoteId: new NoteId(1661780059811L), FieldValues: ["日【ひ】", "day; days"]),
+                (NoteId: new NoteId(1661780059814L), FieldValues: ["月【つき】", "Moon"]),
+                (NoteId: new NoteId(1661780059816L), FieldValues: ["時【とき】", "time; hour; moment"]),
+                (NoteId: new NoteId(1661780059819L), FieldValues: ["水【みず】", "water (esp. cool, fresh water, e.g. drinking water)"]),
+                (NoteId: new NoteId(1661780059821L), FieldValues: ["火【ひ】", "fire; flame; blaze"]),
+                (NoteId: new NoteId(1661780059823L), FieldValues: ["土【つち】", "earth; soil; dirt; clay; mud"]),
+                (NoteId: new NoteId(1661780059825L), FieldValues: ["風【かぜ】", "wind; breeze; draught; draft"]),
+                (NoteId: new NoteId(1661780059826L), FieldValues: ["空【そら】", "sky; the air; the heavens"]),
+                (NoteId: new NoteId(1661780059828L), FieldValues: ["山【やま】", "mountain; hill"]),
+                (NoteId: new NoteId(1661780059830L), FieldValues: ["川【かわ】", "river; stream"]),
+                (NoteId: new NoteId(1661780059832L), FieldValues: ["木【き】", "tree; shrub; bush"]),
+                (NoteId: new NoteId(1661780059835L), FieldValues: ["花【はな】", "flower; blossom; bloom; petal"]),
+                (NoteId: new NoteId(1661780059837L), FieldValues: ["雨【あめ】", "rain"]),
+                (NoteId: new NoteId(1661780059839L), FieldValues: ["雪【ゆき】", "snow; snowfall"]),
+                (NoteId: new NoteId(1661780059840L), FieldValues: ["金【かね】", "money"]),
+                (NoteId: new NoteId(1661780059843L), FieldValues: ["刀【かたな】", "sword (esp. Japanese single-edged); katana"]),
+            ];
+
+            var notes = collection.Notes
+                .Select(noteId => _noteRepository.GetByIdAsync(noteId).Result!)
+                .Where(note => note.NoteTypeId == noteType!.Id)
+                .OrderBy(note => note.Id)
+                .ToArray();
+
+            var notesRead = notes.Select(note =>
+            {
+                var fieldValues = fieldNames.Select(name => note.FieldValues.ToDictionary()[name]).ToArray();
+                return (NoteId: note.Id, FieldValues: fieldValues);
+            }).ToArray();
+
+            notesRead.Select(x => x.NoteId).Should().BeEquivalentTo(expectedNotes.Select(x => x.NoteId));
+        }
+
+        {
+            var noteType = await _noteTypeRepository.GetByIdAsync(new NoteTypeId(1661780059778L))!;
+
+            var cardTemplateNames = noteType!.CardTemplates.Select(cardTemplate => cardTemplate.Name).ToArray();
+
+            var notes = collection.Notes
+                .Select(noteId => _noteRepository.GetByIdAsync(noteId).Result!)
+                .Where(note => note.NoteTypeId == noteType!.Id)
+                .OrderBy(note => note.Id)
+                .ToArray();
+
+            var noteIds = notes.Select(note => note.Id).ToArray();
+
+            var cards = collection.Decks
+                .SelectMany(deckId => _deckRepository.GetByIdAsync(deckId).Result!.Cards)
+                .ToArray();
+
+            var cardsRead = cards
+                .Where(card => noteIds.Contains(card.NoteId))
+                .Select(card => (CardId: card.Id, CardTemplateOrdinal: Array.IndexOf(cardTemplateNames, card.CardTemplateId)))
+                .ToArray();
+
+            var expectedCards = new[]
+            {
+                (CardId: 1661780059803L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059806L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059808L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059810L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059813L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059815L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059817L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059820L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059822L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059824L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059825L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059827L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059829L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059831L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059834L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059836L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059838L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059840L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059841L, CardTemplateOrdinal: 0),
+                (CardId: 1661780059843L, CardTemplateOrdinal: 0),
+            };
+
+            cardsRead.Should().BeEquivalentTo(expectedCards);
+        }
     }
 
-    //[Fact]
-    //public async Task ReadCollection21_NoError()
-    //{
-    //    var collection = await AnkiFileReader.ReadFromFileAsync("db_files/collection21.apkg");
+    [Fact]
+    public async Task ReadCollection21_NoError()
+    {
+        await _ankiFileAccess.LoadAsync("db_files/collection21.apkg");
 
-    //    collection.Decks.Should().HaveCount(3);
-    //    collection.Decks.First().Id.Should().Be(1);
-    //    collection.Decks.First().Cards.Should().BeEmpty();
+        var collection = await _collectionRepository.GetAllAsync().FirstAsync();
 
-    //    collection.Decks[1].Id.Should().Be(1691848838057L);
-    //    collection.Decks[1].Cards.Should().HaveCount(16);
-    //    var card = collection.Decks[1].Cards.First();
+        var decks = collection.Decks
+            .Select(deckId => _deckRepository.GetByIdAsync(deckId).Result!)
+            .ToArray();
 
-    //    card.Note.FieldValues.Should().Equal("Bunga", "Flower");
-    //}
+        decks.Should().HaveCount(3);
 
-    //[Fact]
-    //public async Task ReadCollection21b_NotImplementedException()
-    //{
-    //    var action = async () => _ = await AnkiFileReader.ReadFromFileAsync("db_files/collection21b.apkg");
-    //    await action.Should().ThrowExactlyAsync<NotImplementedException>();
+        {
+            var deck = decks[0];
+            deck.Id.Should().Be(Configurations.DefaultDeckId);
+            deck.Name.Should().Be(DeckConfigurations.DefaultDeckName);
+            deck.Cards.Should().BeEmpty();
+        }
 
-    //    /*
-    //     * If no exception is thrown, a deck with single card like below will be read in collection21 database file.
-    //     * 
-    //    var collection = await AnkiFileReader.ReadFromFileAsync("db_files/collection21b.apkg");
+        {
+            var deck = decks[2];
+            deck.Id.Should().Be(new DeckId(1691848838057L));
+            deck.Cards.Should().HaveCount(16);
 
-    //    collection.Id.Should().Be(1);
+            var card = deck.Cards.First();
+            var note = await _noteRepository.GetByIdAsync(card.NoteId);
+            note!.FieldValues.Select(entry => entry.Value).Should().BeEquivalentTo("Bunga", "Flower");
+        }
+    }
 
-    //    collection.Decks.Should().HaveCount(1);
-    //    collection.Decks.First().Id.Should().Be(1);
-    //    collection.Decks.First().Cards.Should().HaveCount(1);
+    [Fact]
+    public async Task ReadCollection21b_NotImplementedException()
+    {
+        var action = () => _ankiFileAccess.LoadAsync("db_files/collection21b.apkg");
+        await action.Should().ThrowExactlyAsync<NotImplementedException>();
 
-    //    var card = collection.Decks.Single().Cards.Single();
-    //    card.Note.Fields.Should().Equal("Please update to the latest Anki version, then import the .colpkg/.apkg file again.", "");
-    //    */
-    //}
+        /*
+         * If no exception is thrown, a deck with single card like below will be read in collection21 database file.
+         * 
+        var collection = await AnkiFileReader.ReadFromFileAsync("db_files/collection21b.apkg");
+
+        collection.Id.Should().Be(1);
+
+        collection.Decks.Should().HaveCount(1);
+        collection.Decks.First().Id.Should().Be(1);
+        collection.Decks.First().Cards.Should().HaveCount(1);
+
+        var card = collection.Decks.Single().Cards.Single();
+        card.Note.Fields.Should().Equal("Please update to the latest Anki version, then import the .colpkg/.apkg file again.", "");
+        */
+    }
 }

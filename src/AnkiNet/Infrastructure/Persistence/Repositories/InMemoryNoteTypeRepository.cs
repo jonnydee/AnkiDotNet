@@ -9,6 +9,13 @@ public sealed class InMemoryNoteTypeRepository
 
     public ValueTask AddAsync(NoteType noteType)
     {
+        if (_noteTypes.ContainsKey(noteType.Id))
+            throw new InvalidOperationException($"Note type with ID {noteType.Id} already exists.");
+
+        if (noteType.IsDirty is false)
+            throw new InvalidOperationException("Note type is not dirty.");
+
+        noteType.IsDirty = false;
         noteType = noteType.Clone();
         _noteTypes.Add(noteType.Id, noteType);
         return ValueTask.CompletedTask;
