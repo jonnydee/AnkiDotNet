@@ -95,12 +95,15 @@ public sealed class Collection
 
     public void RemoveNoteType(NoteTypeId id)
     {
+        if (!NoteTypes.Contains(id))
+            return;
+
         NoteTypes = NoteTypes.Remove(id);
         
         if (Configuration.CurrentNoteType == id)
         {
             var lastNoteType = NoteTypes.LastOrDefault(NoteTypeId.Empty);
-            Configuration = Configuration with { CurrentNoteType = lastNoteType, };
+            Configuration = Configuration with { CurrentNoteType = lastNoteType };
         }
 
         IsDirty = true;
@@ -117,6 +120,9 @@ public sealed class Collection
 
     public void RemoveNote(NoteId id)
     {
+        if (!Notes.Contains(id))
+            return;
+
         Notes = Notes.Remove(id);
         IsDirty = true;
     }
@@ -137,19 +143,17 @@ public sealed class Collection
 
     public IImmutableList<Grave> Graves { get; private set; }
 
-    public long CreationDateTime { get; set; }
+    public long CreationDateTime { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long LastModifiedDateTime { get; set; }
+    public long LastModifiedDateTime { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long SchemaModificationDateTime { get; set; }
+    public long SchemaModificationDateTime { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long Version { get; set; }
+    public long Version { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long UpdateSequenceNumber { get; set; }
+    public long UpdateSequenceNumber { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long LastSyncDateTime { get; set; }
+    public long LastSyncDateTime { get => field; set => SetPropertyValue(ref field, value); }
 
-    public Configuration Configuration { get; set; } = new();
-
-    public bool IsDirty { get; set; }
+    public Configuration Configuration { get => field; set => SetPropertyValue(ref field, value); } = new();
 }

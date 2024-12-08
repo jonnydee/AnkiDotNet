@@ -44,13 +44,9 @@ public sealed class Note
         ArgumentNullException.ThrowIfNull(tags);
 
         NoteTypeId = noteTypeId;
-        FieldValues = fieldValues.ToImmutableArray(); // TODO Use array for preserving order?
+        FieldValues = fieldValues.ToImmutableArray();
         SortField = FieldValues.FirstOrDefault().Value ?? string.Empty;
         Tags = tags.ToImmutableArray();
-
-        if (Tags.Distinct().Count() != Tags.Length)
-            throw new ArgumentException("Duplicate tags are not allowed.");
-
         Guid = System.Guid.NewGuid().ToString().Substring(0, 10);
     }
 
@@ -65,24 +61,29 @@ public sealed class Note
             IsDirty = IsDirty,
         };
 
-    public bool IsDirty { get; set; }
+    public NoteTypeId NoteTypeId { get => field; internal set => SetPropertyValue(ref field, value); }
 
-    public NoteTypeId NoteTypeId { get; internal set; }
+    public ImmutableArray<KeyValuePair<string, string>> FieldValues { get => field; internal set => SetPropertyValue(ref field, value); }
 
-    public ImmutableArray<KeyValuePair<string, string>> FieldValues { get; internal set; }
+    public ImmutableArray<Tag> Tags
+    {
+        get => field;
+        set => SetPropertyValue(ref field, value,
+            validate: tags => tags.Distinct().Count() == tags.Length
+            ? true
+            : throw new ArgumentException("Duplicate tags are not allowed."));
+    }
 
-    public ImmutableArray<Tag> Tags { get; internal set; }
+    public string Guid { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 
-    public string Guid { get; internal set; } = string.Empty;
+    public long ModificationDateTime { get => field; set => SetPropertyValue(ref field, value); }
 
-    public long ModificationDateTime { get; internal set; }
-
-    public long UpdateSequenceNumber { get; internal set; }
+    public long UpdateSequenceNumber { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Integer representation of first 8 digits of sha1 hash of the first field.
     /// </summary>
-    public long FieldChecksum { get; internal set; }
+    public long FieldChecksum { get => field; set => SetPropertyValue(ref field, value); }
 
-    public string SortField { get; internal set; } = string.Empty;
+    public string SortField { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 }

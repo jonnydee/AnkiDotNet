@@ -35,7 +35,9 @@ public sealed class Deck
 
         Name = name;
         DeckConfiguration = deckConfiguration;
-        Cards = cards.ToImmutableArray();
+
+        Cards = [];
+        AddCards(cards);
     }
 
     internal Deck Clone()
@@ -57,8 +59,6 @@ public sealed class Deck
             IsDirty = IsDirty,
         };
 
-    public bool IsDirty { get; set; }
-
     public ImmutableArray<Card> Cards { get; private set; }
 
     /// <summary>
@@ -69,7 +69,7 @@ public sealed class Deck
     /// <summary>
     /// The configuration for this deck.
     /// </summary>
-    public DeckConfiguration DeckConfiguration { get; set; }
+    public DeckConfiguration DeckConfiguration { get => field; set => SetPropertyValue(ref field, value); }
 
     public Deck AddCards(IEnumerable<Card> cards)
     {
@@ -127,28 +127,17 @@ public sealed class Deck
 
         foreach (var template in noteType.CardTemplates)
         {
-            var card = AddCard(note, template, note.FieldValues);
+            var id = IdFactory.Create(idExists: id => Cards.Any(card => card.Id == id));
+            var card = new Card(
+                id: id,
+                noteId: note.Id,
+                cardTemplateId: template.Id,
+                revisionLogs: []);
+
+            Cards = Cards.Add(card);
         }
-    }
 
-    private Card AddCard(Note note, CardTemplate cardTemplate, IEnumerable<KeyValuePair<string, string>> fieldValues)
-    {
-        ArgumentNullException.ThrowIfNull(note);
-        ArgumentNullException.ThrowIfNull(cardTemplate);
-        ArgumentNullException.ThrowIfNull(fieldValues);
-
-        var id = IdFactory.Create(idExists: id => Cards.Any(card => card.Id == id));
-        var card = new Card(
-            id: id,
-            noteId: note.Id,
-            cardTemplateId: cardTemplate.Id,
-            revisionLogs: []);
-
-        ThrowIfCardWithIdAlreadyExists(card);
-
-        Cards = Cards.Add(card);
         IsDirty = true;
-        return card;
     }
 
     private void ThrowIfCardWithIdAlreadyExists(Card card)
@@ -182,72 +171,72 @@ public sealed class Deck
     /// <summary>
     /// Last modification time.
     /// </summary>
-    public long LastModificationTime { get; set; } // TODO Use DateTime?
+    public long LastModificationTime { get => field; set => SetPropertyValue(ref field, value); } // TODO Use DateTime?
 
     /// <summary>
     /// Update sequence number.
     /// </summary>
-    public long UpdateSequenceNumber { get; set; }
+    public long UpdateSequenceNumber { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// First one is the number of days that have passed between the collection was created and the deck was last updated.
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
-    public (int DaysSinceCreation, int CardsSeenToday) NewToday { get; set; }
+    public (int DaysSinceCreation, int CardsSeenToday) NewToday { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// First one is the number of days that have passed between the collection was created and the deck was last updated.
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
-    public (int DaysSinceCreation, int CardsSeenToday) ReviewedToday { get; set; }
+    public (int DaysSinceCreation, int CardsSeenToday) ReviewedToday { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Two number array.
     /// First one is the number of days that have passed between the collection was created and the deck was last updated.
     /// The second one is equal to the number of cards seen today in this deck minus the number of new cards in custom study today.
     /// </summary>
-    public (int DaysSinceCreation, int CardsSeenToday) LearnedToday { get; set; }
+    public (int DaysSinceCreation, int CardsSeenToday) LearnedToday { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Two numbers used somehow for custom study. Currently unused in the code.
     /// </summary>
-    public (int Value1, int Value2) TimeToday { get; set; }
+    public (int Value1, int Value2) TimeToday { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// True when deck is collapsed.
     /// </summary>
-    public bool IsCollapsed { get; set; }
+    public bool IsCollapsed { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// True when deck collapsed in browser.
     /// </summary>
-    public bool IsCollapsedInBrowser { get; set; }
+    public bool IsCollapsedInBrowser { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Deck's description.
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public string Description { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 
     /// <summary>
     /// Indicates if the deck is dynamic (aka. filtered).
     /// </summary>
-    public bool IsDynamic { get; set; }
+    public bool IsDynamic { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Id of option group from 'dconf' column in [col]table.
     /// Or absent if the deck is dynamic (aka. filtered).
     /// </summary>
-    public long? ConfigurationGroupId { get; set; }
+    public long? ConfigurationGroupId { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Extended new card limit (for custom study).
     /// Potentially absent, in this case it's considered to be 10, by aqt.customstudy.
     /// </summary>
-    public int ExtendedNewCardLimit { get; set; } //= 10;
+    public int ExtendedNewCardLimit { get => field; set => SetPropertyValue(ref field, value); } //= 10;
 
     /// <summary>
     /// Extended review card limit (for custom study).
     /// Potentially absent, in this case it's considered to be 10, by aqt.customstudy.
     /// </summary>
-    public int ExtendedReviewCardLimit { get; set; } //= 10;
+    public int ExtendedReviewCardLimit { get => field; set => SetPropertyValue(ref field, value); } //= 10;
 }

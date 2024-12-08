@@ -12,8 +12,6 @@ namespace AnkiNet.DomainModel;
 public sealed class NoteType
     : AggregateRoot<NoteTypeId>
 {
-    private string _styling = string.Empty;
-
     public static NoteType Create(
         NoteTypeId id,
         string name,
@@ -70,22 +68,20 @@ public sealed class NoteType
         };
     }
 
-    public bool IsDirty { get; set; }
-
     /// <summary>
     /// Name of the note type (e.g., "Basic", "Cloze").
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; private set; }
 
     /// <summary>
     /// List of <see cref="Field"/>s included in this note type.
     /// </summary>
-    public ImmutableArray<Field> Fields { get; set; }
+    public ImmutableArray<Field> Fields { get; private set; }
 
     /// <summary>
     /// List of associated card templates.
     /// </summary>
-    public ImmutableArray<CardTemplate> CardTemplates { get; set; }
+    public ImmutableArray<CardTemplate> CardTemplates { get; private set; }
 
     public void AddCardTemplates(IEnumerable<CardTemplate> cardTemplates)
     {
@@ -139,62 +135,50 @@ public sealed class NoteType
     /// <summary>
     /// CSS, shared for all templates.
     /// </summary>
-    public string Styling
-    {
-        get => _styling;
-
-        set
-        {
-            if (value == _styling)
-                return;
-
-            _styling = value;
-            IsDirty = true;
-        }
-    }
+    public string Styling { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 
     /// <summary>
     /// Modification time in seconds.
     /// </summary>
-    public long ModificationTime { get; set; } // TODO Use DateTime?
+    public long ModificationTime { get => field; set => SetPropertyValue(ref field, value); } // TODO Use DateTime?
 
     /// <summary>
     /// The id of the deck that cards are added to by default.
     /// </summary>
-    public DeckId DefaultDeckId { get; set; }
+    public DeckId DefaultDeckId { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// The type of model.
     /// </summary>
-    public ModelType ModelType { get; set; }
+    public ModelType ModelType { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Update sequence number: used in same way as other usn vales in db.
     /// </summary>
-    public long UpdateSequenceNumber { get; set; }
+    public long UpdateSequenceNumber { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// String added to end of LaTeX expressions (usually \\end{document}).
     /// </summary>
-    public string LatexPost { get; set; } = string.Empty;
+    public string LatexPost { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 
     /// <summary>
     /// Preamble string for LaTeX expressions.
     /// </summary>
-    public string LatexPre { get; set; } = string.Empty;
+    public string LatexPre { get => field; set => SetPropertyValue(ref field, value); } = string.Empty;
 
     /// <summary>
     /// Undocumented.
     /// </summary>
-    public bool LatexSvg { get; set; }
+    public bool LatexSvg { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Integer specifying which field is used for sorting in the browser.
     /// </summary>
-    public int BrowserSortField { get; set; }
+    public int BrowserSortField { get => field; set => SetPropertyValue(ref field, value); }
 
     /// <summary>
     /// Anki saves the tags of the last added note to the current model, use an empty array [].
     /// </summary>
-    public ImmutableArray<Tag> LastAddedNoteTags { get; set; } = [];
+    public ImmutableArray<Tag> LastAddedNoteTags { get => field; set => SetPropertyValue(ref field, value); } = [];
 }
